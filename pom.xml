@@ -11,7 +11,7 @@
 		<version>2.0.0.RELEASE</version>
 	</parent>
 
-	<groupId>com.vk.log.scanner</groupId>
+	<groupId>org.logscanner</groupId>
 	<artifactId>logscanner</artifactId>
 	<name>logscanner</name>
 	<version>2.0</version>
