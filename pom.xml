@@ -37,7 +37,7 @@
 
 	<profiles>
 		<profile>
-			<id>windows-deploy</id>
+			<id>win</id>
 			<activation>
 				<os>
 					<family>Windows</family>
@@ -81,6 +81,7 @@
 			</build>
 		</profile>
 		<profile>
+			<id>mac</id>
 			<activation>
 				<os>
 					<family>mac</family>
