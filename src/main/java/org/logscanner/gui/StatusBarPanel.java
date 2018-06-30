@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ public class StatusBarPanel extends JPanel
 	
 	private JXStatusBar statusBar;
 	private JLabel statusLabel;
-	private JProgressBar progressBar;
+	private JLabel progressLabel;
 	
 	@PostConstruct
 	public void init()
@@ -41,12 +42,9 @@ public class StatusBarPanel extends JPanel
 		c1.setFixedWidth(100);
 		statusLabel = new JLabel("Готов");
 		statusBar.add(statusLabel, c1);
-		//JLabel label = new JLabel("Хм...");
 		JXStatusBar.Constraint c2 = new JXStatusBar.Constraint(); 
-		c2.setFixedWidth(200);
-		progressBar = new JProgressBar();
-		progressBar.setBorder(BorderFactory.createEmptyBorder());
-		statusBar.add(progressBar, c2);
+		progressLabel = new JLabel("");
+		statusBar.add(progressLabel, c2);
 
 		add(statusBar, BorderLayout.CENTER);
 		
@@ -57,7 +55,6 @@ public class StatusBarPanel extends JPanel
 					@Override
 					public void propertyChange(PropertyChangeEvent event)
 					{
-						//log.info("{}", event);
 						switch ((JobResultModel.JobState)event.getNewValue())
 						{
 							case RUNNED:
@@ -70,6 +67,22 @@ public class StatusBarPanel extends JPanel
 								statusLabel.setText("Готово");
 								break;
 						}
+					}
+				}
+		);
+
+		resultModel.addPropertyChangeListener(
+				new PropertyChangeListener()
+				{
+					@Override
+					public void propertyChange(PropertyChangeEvent event)
+					{
+						if (!StringUtils.equalsAny(event.getPropertyName(), "filesToProcess", "processedFiles", "selectedFiles"))
+							return;
+						int processed = "processedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getProcessedFiles();
+						int selected = "selectedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getSelectedFiles();
+						int total = "filesToProcess".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getFilesToProcess();
+						progressLabel.setText("Обработано " + processed + " из " + total + ". Выбрано " + selected);
 					}
 				}
 		);

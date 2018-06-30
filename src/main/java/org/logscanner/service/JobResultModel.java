@@ -58,7 +58,8 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 	private int selectedItemIndex;
 	private Throwable error;
 	private AtomicInteger filesToProcess = new AtomicInteger();
-	private AtomicInteger processed = new AtomicInteger();
+	private AtomicInteger processedFiles = new AtomicInteger();
+	private AtomicInteger selectedFiles = new AtomicInteger();
 	
 	@PostConstruct
 	void init()
@@ -232,23 +233,24 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 		filesToProcess.addAndGet(value);
 	}
 
-	public int getProcessed()
+	public int getProcessedFiles()
 	{
-		return processed.intValue();
+		return processedFiles.intValue();
 	}
-	public void addProcessed(int value)
+	public void addProcessedFile()
 	{
-		firePropertyChange("processed", processed.intValue(), processed.intValue() + value);
-		processed.addAndGet(value);
+		firePropertyChange("processedFiles", processedFiles.intValue(), processedFiles.intValue() + 1);
+		processedFiles.incrementAndGet();
 	}
 
-//	@Override
-//	public void handleException(RepeatContext context, Throwable throwable) throws Throwable 
-//	{
-//		log.info("ZZZZZZZZZZZZZZZZ {}", throwable.getClass().getName());
-//		firePropertyChange("error", this.error, throwable);
-//		this.error = throwable;
-//		throw throwable;
-//	}
+	public int getSelectedFiles()
+	{
+		return selectedFiles.intValue();
+	}
+	public void addSelectedFile()
+	{
+		firePropertyChange("selectedFiles", selectedFiles.intValue(), selectedFiles.intValue() + 1);
+		selectedFiles.incrementAndGet();
+	}
 	
 }

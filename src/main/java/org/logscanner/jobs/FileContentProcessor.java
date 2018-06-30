@@ -76,7 +76,10 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
 			fileData.setZipPath(getZipPath(file));
 			FileData result = null;
 			if (match(fileData))
+			{
+				resultModel.addSelectedFile();
 				result = fileData;
+			}
 			return result;
 		}
 		catch (FileTooBigException ex) {
@@ -95,6 +98,7 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
     	boolean result = false;
 
 		log.info("Проверяю {}", fileData.getFilePath());
+		resultModel.addProcessedFile();
 		
     	if (FilenameUtils.isExtension(fileData.getFilePath(), "zip"))
     	{

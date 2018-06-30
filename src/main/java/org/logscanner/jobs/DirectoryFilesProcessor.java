@@ -47,6 +47,8 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 	private LogPatternDao patternDao;
 	@Autowired
 	private FileServiceSelector fileServiceSelector;
+	@Autowired
+	private JobResultModel resultModel;
 
 	private StepExecution stepExecution;
 	private LogPattern pattern;
@@ -68,12 +70,15 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 		
 		if (!list.isEmpty())
 		{
+			resultModel.addFilesToProcess(list.size());
+			
 			Collections.sort(list, new NameComparator());
 			result = new DirInfo();
 			result.setLocation(location.getName());
 			result.setRootPath(location.getPath());
 			result.setFiles(list);
 		}
+		
 		return result;
 	}
 

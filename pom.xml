@@ -14,7 +14,7 @@
 	<groupId>org.logscanner</groupId>
 	<artifactId>logscanner</artifactId>
 	<name>LogScanner</name>
-	<version>2.2</version>
+	<version>2.3</version>
 	<packaging>jar</packaging>
 
 	<description></description>
