@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractListModel;
@@ -56,6 +57,8 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 	private LocalTime endTime;
 	private int selectedItemIndex;
 	private Throwable error;
+	private AtomicInteger filesToProcess = new AtomicInteger();
+	private AtomicInteger processed = new AtomicInteger();
 	
 	@PostConstruct
 	void init()
@@ -126,6 +129,7 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 		int size = queue.size();
 		queue.clear();
 		fireIntervalRemoved(this, 0, size);
+		error = null;
 		startTime = null;
 		endTime = null;
 	}
@@ -151,8 +155,7 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 	public void beforeJob(JobExecution jobExecution) 
 	{
 		log.info("beforeJob({})", jobExecution);
-		error = null;
-		endTime = null;
+		clear();
 		startTime = jobExecution.getStartTime()
 						.toInstant()
 	      				.atZone(ZoneId.systemDefault())
@@ -200,7 +203,7 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 	@Override
 	public void valueChanged(ListSelectionEvent event) 
 	{
-		log.info("valueChanged({})", event);
+//		log.info("valueChanged({})", event);
 		selectedItemIndex = event.getFirstIndex();
 	}
 	
@@ -217,6 +220,26 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 	public boolean isSuccess()
 	{
 		return endTime != null && error == null;
+	}
+
+	public int getFilesToProcess()
+	{
+		return filesToProcess.intValue();
+	}
+	public void addFilesToProcess(int value)
+	{
+		firePropertyChange("filesToProcess", filesToProcess.intValue(), filesToProcess.intValue() + value);
+		filesToProcess.addAndGet(value);
+	}
+
+	public int getProcessed()
+	{
+		return processed.intValue();
+	}
+	public void addProcessed(int value)
+	{
+		firePropertyChange("processed", processed.intValue(), processed.intValue() + value);
+		processed.addAndGet(value);
 	}
 
 //	@Override

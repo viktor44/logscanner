@@ -1,13 +1,17 @@
 package org.logscanner.gui;
 
 import java.awt.event.ActionEvent;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Date;
+import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.logscanner.AppConstants;
 import org.logscanner.common.gui.BaseAction;
+import org.logscanner.common.gui.MessageBox;
 import org.logscanner.exception.BusinessException;
 import org.logscanner.service.JobResultModel;
 import org.logscanner.service.SearchModel;
@@ -58,7 +62,16 @@ public class SearchAction extends BaseAction {
 	}
 
 	private void start() throws Exception {
-
+		if (searchModel.getSelectedLocations().isEmpty())
+		{
+			MessageBox.showMessageDialog(null, "Не выбрано ни одного расположения для поиска"); 
+			return;
+		}
+		if (searchModel.isSaveToFile() && Files.exists(Paths.get(searchModel.getResultPath())))
+		{
+			if (!MessageBox.showConfirmDialog(null, MessageFormat.format("Файл {0} уже существует. Перезаписать?", searchModel.getResultPath()))) 
+				return;
+		}
 		JobParametersBuilder jobParamsBuilder = new JobParametersBuilder()
 				.addString(AppConstants.JOB_PARAM_ID, UUID.randomUUID().toString())
 				.addDate(AppConstants.JOB_PARAM_FROM, Date.from(searchModel.getFrom().atZone(ZoneId.systemDefault()).toInstant()))
@@ -71,6 +84,8 @@ public class SearchAction extends BaseAction {
 //				.addString(AppConstants.JOB_PARAM_ENCODING, searchModel.getEncoding());
 		JobExecution jobExecution = jobLauncher.run(job, jobParamsBuilder.toJobParameters());
 		searchModel.setExecutionId(jobExecution.getId());
+		
+		searchModel.saveDefaults();
 
 		log.info("started");
 	}

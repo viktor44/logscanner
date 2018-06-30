@@ -101,11 +101,6 @@ public class SearchPanel extends JPanel
 	private JTextField searchText;
 	private BeanAdapter<SearchModel> beanAdapter;
 
-	public SearchPanel()
-	{
-		super();
-	}
-	
 	@PostConstruct
 	public void init()
 	{

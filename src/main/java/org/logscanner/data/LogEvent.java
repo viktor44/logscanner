@@ -9,7 +9,6 @@ import java.util.Date;
  */
 public class LogEvent 
 {
-	private LocalTime eventTime = LocalTime.now();
 	private Date logTime;
 	private String locationName;
 	private String path;
@@ -49,8 +48,5 @@ public class LogEvent
 	}
 	public void setText(String text) {
 		this.text = text;
-	}
-	public LocalTime getEventTime() {
-		return eventTime;
 	}
 }

@@ -8,19 +8,13 @@ public class FileData
 	private String location;
 	private String filePath;
 	private String zipPath;
-	private byte[] content;
+	private ContentReader contentReader;
 	
 	public String getZipPath() {
 		return zipPath;
 	}
 	public void setZipPath(String zipPath) {
 		this.zipPath = zipPath;
-	}
-	public byte[] getContent() {
-		return content;
-	}
-	public void setContent(byte[] content) {
-		this.content = content;
 	}
 	public String getFilePath() {
 		return filePath;
@@ -33,5 +27,11 @@ public class FileData
 	}
 	public void setLocation(String location) {
 		this.location = location;
+	}
+	public ContentReader getContentReader() {
+		return contentReader;
+	}
+	public void setContentReader(ContentReader contentReader) {
+		this.contentReader = contentReader;
 	}
 }

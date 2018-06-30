@@ -2,9 +2,7 @@ package org.logscanner.gui;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.Arrays;
 
-import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -12,7 +10,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseAction;
-import org.logscanner.common.gui.FileChooser;
 import org.logscanner.service.SearchModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +38,8 @@ public class SelectSaveToAction extends BaseAction
 	@Override
 	protected void actionPerformed0(ActionEvent event) throws Exception
 	{
-		FileChooser fileChooser = new FileChooser();
+		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		//fileChooser.setCurrentDirectory(dir);
 		if (StringUtils.isNotBlank(searchModel.getResultPath()))
 			fileChooser.setSelectedFile(new File(searchModel.getResultPath()));
 		fileChooser.setFileFilter(createFileFilter());

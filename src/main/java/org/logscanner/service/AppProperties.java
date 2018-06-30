@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.logscanner.data.Location;
 import org.logscanner.data.LocationGroup;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -43,11 +45,9 @@ public class AppProperties
 	@JsonIgnore
 	@Autowired
 	private ObjectMapper mapper;
-
-	private int settingsVersion = 1;
-//	private String encoding = "Cp1251";
-//	List<String> encodings = Arrays.asList("UTF-8", "Cp1251", "Cp866");
-	private int maxResults = 100000;
+	@JsonIgnore
+	@Value("${version}")
+	private String version;
 	@JsonIgnore
 	private Path preferencesDir;
 	@JsonIgnore
@@ -58,13 +58,19 @@ public class AppProperties
 	private Path patternsFile;
 	@JsonIgnore
 	private FileTime settingsFileChangeTime;
+
+	private int settingsVersion = 1;
+	private int maxResults = 100000;
+	private String defaultPatternCode;
+	private String defaultDir;
+	private Boolean defaultSaveToFile;
+	private String locale = "en";
 	
 	@PostConstruct
 	public void init()
 	{
 		try 
 		{
-			
 			AppDirs appDirs = AppDirsFactory.getInstance();
 			preferencesDir = Paths.get(appDirs.getUserConfigDir("LogScanner", null, "", true));
 			if (Files.notExists(preferencesDir))
@@ -89,6 +95,21 @@ public class AppProperties
 		catch (IOException ex) 
 		{
 			throw new BeanInitializationException("Initialization of AppProperties failed", ex);
+		}
+	}
+	
+	@PreDestroy
+	public void close()
+	{
+		try
+		{
+			if (settingsFileChangeTime != null 
+					&& Files.getLastModifiedTime(settingsFile).compareTo(settingsFileChangeTime) == 0)
+				saveSettings();
+		}
+		catch (Exception ex)
+		{
+			log.error("", ex);
 		}
 	}
 	
@@ -150,9 +171,11 @@ public class AppProperties
 									reader.getFactory().createParser(settingsFile.toFile()), 
 									AppProperties.class
 							);
-//		encoding = p.encoding;
-//		encodings = p.encodings;
 		maxResults = p.maxResults;
+		defaultDir = p.defaultDir;
+		defaultPatternCode = p.defaultPatternCode;
+		defaultSaveToFile = p.defaultSaveToFile;
+		locale = p.locale;
 	}
 
 	public Path getPreferencesDir()
@@ -167,39 +190,48 @@ public class AppProperties
 	
 	public String getVersion()
 	{
-		return "1.1.0";
+		return version;
 	}
 
-//	public String getEncoding() 
-//	{
-//		return encoding;
-//	}
-//	public void setEncoding(String encoding) 
-//	{
-//		this.encoding = encoding;
-//	}
-//	
-//	public List<String> getEncodings()
-//	{
-//		return encodings;
-//	}
-	
 	public int getMaxResults()
 	{
 		return maxResults;
 	}
 	
-	@JsonAutoDetect(fieldVisibility=Visibility.ANY)
-	private static class Settings
-	{
-		Integer version;
-		String encoding;
-		Integer maxResults;
-		String encodings;
-	}
-
 	public Path getPatternsFile()
 	{
 		return patternsFile;
+	}
+
+	public String getDefaultPatternCode()
+	{
+		return defaultPatternCode;
+	}
+	public void setDefaultPatternCode(String defaultPatterCode)
+	{
+		this.defaultPatternCode = defaultPatterCode;
+	}
+
+	public String getDefaultDir()
+	{
+		return defaultDir;
+	}
+	public void setDefaultDir(String defaultDir)
+	{
+		this.defaultDir = defaultDir;
+	}
+
+	public Boolean getDefaultSaveToFile()
+	{
+		return defaultSaveToFile;
+	}
+	public void setDefaultSaveToFile(Boolean defaultSaveToFile)
+	{
+		this.defaultSaveToFile = defaultSaveToFile;
+	}
+
+	public String getLocale()
+	{
+		return locale;
 	}
 }

@@ -3,15 +3,14 @@ package org.logscanner;
 import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.spi.FileSystemProvider;
+import java.util.ServiceLoader;
 
 import javax.swing.UIManager;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.gui.MainFrame;
-import org.logscanner.util.ServiceHelper;
-import org.oxbow.swingbits.dialog.task.TaskDialogs;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -31,6 +30,11 @@ public class App
 	{
 		//MacOs application name: -Xdock:name="Log Scanner"
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		
+//		ServiceLoader.load(FileSystemProvider.class)
+//			.forEach(service -> System.out.println("ZZZ: " + service)); 
+//		ServiceLoader.load(FileSystemProvider.class, ClassLoader.getSystemClassLoader())
+//			.forEach(service -> System.out.println("XXX: " + service)); 
 	
 //		System.getProperties().forEach( (k,v) -> { System.out.println("" + k + " : " + v); } );
 		

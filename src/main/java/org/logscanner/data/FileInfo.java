@@ -14,5 +14,6 @@ public interface FileInfo extends Serializable
 //	public InputStream getInputStream() throws IOException;
 //	public long length();
 	public Path getFile();
+	public String getHost();
 	public String getFilePath();
 }

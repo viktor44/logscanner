@@ -2,9 +2,12 @@ package org.logscanner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -12,17 +15,21 @@ import java.time.temporal.TemporalUnit;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.commons.lang3.StringUtils;
+import org.logscanner.common.gui.LeftDotRenderer;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.data.LogEvent;
 import org.logscanner.service.JobResultModel;
@@ -85,6 +92,9 @@ public class ResultsPanel extends JPanel
 		table.setFillsViewportHeight(true);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		
+		FontMetrics fm = table.getFontMetrics(table.getFont());
+		table.setRowHeight(fm.getHeight() + 8);
+		
 		TableColumn column = null;
 		for (int i = 0; i < resultsTableModel.getColumnCount(); i++) {
 		    column = table.getColumnModel().getColumn(i);
@@ -92,6 +102,7 @@ public class ResultsPanel extends JPanel
 		    {
 		    	case 1: // Файл
 		    		column.setPreferredWidth(200);
+		    		column.setCellRenderer(new LeftDotRenderer());
 		    		break;
 		    	case 2: // Строка
 		    		column.setPreferredWidth(800);
@@ -146,21 +157,22 @@ public class ResultsPanel extends JPanel
 		return String.format("%02d:%02d:%02d", hours, minutes, seconds);
 	}
 	
-	public static void main(String[] args)
-	{
-		LocalTime s = LocalTime.now()
-							.minus(Duration.ofHours(2))
-							.minus(Duration.ofMinutes(27))
-							.minus(Duration.ofSeconds(15));
-		LocalTime e = LocalTime.now();
-		System.out.println("ZZZZZZZ: " + createDurationString(s, e));
-	}
+//	public static void main(String[] args)
+//	{
+//		LocalTime s = LocalTime.now()
+//							.minus(Duration.ofHours(2))
+//							.minus(Duration.ofMinutes(27))
+//							.minus(Duration.ofSeconds(15));
+//		LocalTime e = LocalTime.now();
+//		System.out.println("ZZZZZZZ: " + createDurationString(s, e));
+//	}
 	
 	private class ResultsTableModel extends AbstractTableModel implements ListDataListener
 	{
 		private static final long serialVersionUID = 1L;
 		
 		private String[] columnNames = { "Время", "Файл", "Строка" };
+		private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		
 		public ResultsTableModel()
 		{
@@ -193,10 +205,9 @@ public class ResultsPanel extends JPanel
 				switch (columnIndex)
 				{
 					case 0:
-						result = logEvent.getLogTime();
+						result = logEvent.getLogTime() != null ? dateFormat.format(logEvent.getLogTime()) : null;
 						break;
 					case 1:
-//						result = StringUtils.abbreviateMiddle(logEvent.getPath(), "...", 50);
 						result = logEvent.getPath();
 						break;
 					case 2:

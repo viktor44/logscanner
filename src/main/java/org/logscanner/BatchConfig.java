@@ -39,7 +39,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 @Configuration
 @EnableBatchProcessing
-public class BatchConfig //extends DefaultBatchConfigurer
+public class BatchConfig extends DefaultBatchConfigurer
 {
 	public static final int DEFAULT_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 	
@@ -175,23 +175,32 @@ public class BatchConfig //extends DefaultBatchConfigurer
         return executor;
 	}
 	
-	@Bean
-	TaskExecutor jobLauncherTaskExecutor()
-	{
-		return new SimpleAsyncTaskExecutor();
-	}
-	
-	@Bean
-	JobLauncher jobLauncher(
-						JobRepository jobRepository, 
-						@Qualifier("jobLauncherTaskExecutor") TaskExecutor taskExecutor
-				)
-	{
+	@Override
+	protected JobLauncher createJobLauncher() throws Exception {
 		SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
-		jobLauncher.setJobRepository(jobRepository);
-		jobLauncher.setTaskExecutor(taskExecutor);
+		jobLauncher.setJobRepository(getJobRepository());
+		jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());		
+		jobLauncher.afterPropertiesSet();
 		return jobLauncher;
 	}
+
+//	@Bean
+//	TaskExecutor jobLauncherTaskExecutor()
+//	{
+//		return new SimpleAsyncTaskExecutor();
+//	}
+//	
+//	@Bean
+//	JobLauncher jobLauncher(
+//						JobRepository jobRepository, 
+//						@Qualifier("jobLauncherTaskExecutor") TaskExecutor taskExecutor
+//				)
+//	{
+//		SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
+//		jobLauncher.setJobRepository(jobRepository);
+//		jobLauncher.setTaskExecutor(taskExecutor);
+//		return jobLauncher;
+//	}
 
 	@Bean
 	ItemReader<? extends Object> dirsQueueReader()

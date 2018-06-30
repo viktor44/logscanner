@@ -19,6 +19,7 @@ public class LogPattern implements Named
 	private String name;
 	private String encoding;
 	private String[] includes;
+	private String datePattern;
 	
 	LogPattern()
 	{
@@ -100,5 +101,14 @@ public class LogPattern implements Named
 		} else if (!code.equals(other.code))
 			return false;
 		return true;
+	}
+
+	public String getDatePattern()
+	{
+		return datePattern;
+	}
+	public void setDatePattern(String datePattern)
+	{
+		this.datePattern = datePattern;
 	}
 }

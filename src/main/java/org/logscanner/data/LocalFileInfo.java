@@ -34,4 +34,10 @@ public class LocalFileInfo implements FileInfo
 	public LocationType getLocationType() {
 		return LocationType.LOCAL;
 	}
+
+	@Override
+	public String getHost()
+	{
+		return null;
+	}
 }

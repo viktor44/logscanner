@@ -13,8 +13,8 @@
 
 	<groupId>org.logscanner</groupId>
 	<artifactId>logscanner</artifactId>
-	<name>logscanner</name>
-	<version>2.0</version>
+	<name>LogScanner</name>
+	<version>2.2</version>
 	<packaging>jar</packaging>
 
 	<description></description>
@@ -28,10 +28,38 @@
 
 	<build>
 		<plugins>
+<!--  
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<layout>ZIP</layout>
+				</configuration>
 			</plugin>
+-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>				
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.build.directory}/lib</outputDirectory>
+				</configuration>
+			</plugin>			
 		</plugins>
 	</build>
 
@@ -58,13 +86,17 @@
 								</goals>
 								<configuration>
 									<headerType>gui</headerType>
-									<dontWrapJar>false</dontWrapJar>
+									<dontWrapJar>true</dontWrapJar>
+									<jar>lib/${project.build.finalName}</jar>
 									<outfile>target/LogScanner.exe</outfile>
+									<chdir>.</chdir>
 									<classPath>
-										<mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
+										<mainClass>org.logscanner.App</mainClass>
+										<preCp>./lib/*</preCp>
 										<addDependencies>false</addDependencies>
 									</classPath>
 									<jre>
+										<path>./jre</path>
 										<minVersion>1.8.0</minVersion>
 										<maxHeapSize>2048</maxHeapSize>
 										<opts>
@@ -73,6 +105,17 @@
 											<opt>-XX:MaxHeapFreeRatio=30</opt>
 										</opts>
 									</jre>
+									<versionInfo>
+										<fileDescription>${project.name}</fileDescription>
+										<fileVersion>${project.version}.0.0</fileVersion>
+										<txtFileVersion>${project.version}.0.0</txtFileVersion>
+										<productName>${project.name}</productName>
+										<productVersion>${project.version}.0.0</productVersion>
+										<txtProductVersion>${project.version}.0.0</txtProductVersion>
+										<copyright>Victor K</copyright>
+										<internalName>${project.name}</internalName>
+										<originalFilename>LogScanner.exe</originalFilename>
+									</versionInfo>
 								</configuration>
 							</execution>
 						</executions>
@@ -187,6 +230,7 @@
 			<version>1.2.1</version>
 		</dependency>
 <!--  
+			<scope>provided</scope>
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant-commons-net</artifactId>

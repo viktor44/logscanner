@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.lang3.StringUtils;
 import org.logscanner.AppConstants;
 import org.logscanner.data.Location;
+import org.logscanner.data.LocationType;
 import org.logscanner.service.LocationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,8 @@ public class ConfigFileReader implements ItemReader<Location>
 				result = locations.remove(0);
 		}
 		
-		log.info("{} read() {}", hashCode(), result);
+		if (result != null)
+			log.info("read() {}", result);
 		
 		return result;
 	}
@@ -70,6 +72,7 @@ public class ConfigFileReader implements ItemReader<Location>
 			if (l != null)
 			{
 				list.add(l);
+//				paths.add((l.getType() != LocationType.LOCAL ? (l.getHost() + "/") : "") + l.getPath());
 				paths.add(l.getPath());
 			}
 			else
@@ -83,31 +86,33 @@ public class ConfigFileReader implements ItemReader<Location>
 	
 	private String getCommonPrefix(List<String> paths)
 	{
-		String result = "";
-		String commonPath = StringUtils.getCommonPrefix(paths.toArray(new String[paths.size()]));
-		while (StringUtils.isNoneEmpty(commonPath))
-		{
-			File f = new File(commonPath);
-			if (f.exists() && f.isDirectory())
-			{
-				result = f.getAbsolutePath();
-				break;
-			}
-			else
-			{
-				int index = commonPath.lastIndexOf(File.separator);
-				if (index >= 0)
-				{
-					commonPath = commonPath.substring(0, index);
-					if (commonPath.equals("\\")) // windows net path \\...
-						commonPath = "";
-				}
-				else 
-					commonPath = "";
-			}
-		}
-//		log.info("getCommonPrefix() = {}", result);
-		return result;
+//		String result = "";
+//		String commonPath = StringUtils.getCommonPrefix(paths.toArray(new String[paths.size()]));
+//		while (StringUtils.isNoneEmpty(commonPath))
+//		{
+//			File f = new File(commonPath);
+//			if (f.exists() && f.isDirectory())
+//			{
+//				result = f.getAbsolutePath();
+//				break;
+//			}
+//			else
+//			{
+//				int index = commonPath.lastIndexOf(File.separator);
+//				if (index >= 0)
+//				{
+//					commonPath = commonPath.substring(0, index);
+//					if (commonPath.equals("\\")) // windows net path \\...
+//						commonPath = "";
+//				}
+//				else 
+//					commonPath = "";
+//			}
+//		}
+////		log.info("getCommonPrefix() = {}", result);
+//		return result;
+		
+		return "";
 	}
 
     @BeforeStep

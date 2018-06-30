@@ -2,6 +2,8 @@ package org.logscanner.service;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,6 +14,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.swing.event.SwingPropertyChangeSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.logscanner.common.gui.ListItem;
 import org.slf4j.Logger;
@@ -55,8 +58,12 @@ public class SearchModel
 		toDate = LocalDate.now();
 		toTime = LocalTime.now();
 		selectedLocations = new HashSet<>();
-		saveToFile = true;
-		resultPath = "result.zip";
+		saveToFile = props.getDefaultSaveToFile() != null ? props.getDefaultSaveToFile() : false;
+		if (StringUtils.isNotBlank(props.getDefaultDir()))
+			resultPath = Paths.get(props.getDefaultDir(), "result.zip").toString();
+		else
+			resultPath = "result.zip";
+		patternCode = props.getDefaultPatternCode();
 	}
 	
 	public String getResultPath() {
@@ -152,9 +159,19 @@ public class SearchModel
 	public LocalDate getFromDate() {
 		return fromDate;
 	}
-	public void setFromDate(LocalDate fromDate) {
-		firePropertyChange("fromDate", this.fromDate, fromDate);
-		this.fromDate = fromDate;
+	public void setFromDate(LocalDate newFromDate) {
+		firePropertyChange("fromDate", this.fromDate, newFromDate);
+		this.fromDate = newFromDate;
+
+		LocalDate newToDate = this.toDate;
+		if (fromDate != null) // && fromDate.compareTo(toDate) > 0
+		{
+			setToDate(fromDate);
+			if (fromDate.compareTo(LocalDate.now()) == 0)
+				setToTime(LocalTime.now());
+			else
+				setToTime(LocalTime.of(23, 59, 59));
+		}
 	}
 
 	public LocalTime getFromTime() {
@@ -197,11 +214,14 @@ public class SearchModel
 		this.patternCode = patternCode;
 	}
 
-//	public ListItem<String> getPatternCodeItem() {
-//		return new ListItem<>(patternCode, patternCode);
-//	}
-//	public void setPatternCodeItem(ListItem<String> item) {
-//		firePropertyChange("patternCode", this.patternCode, item.getValue());
-//		this.patternCode = item.getValue();
-//	}
+	public void saveDefaults()
+	{
+		props.setDefaultPatternCode(patternCode);
+		props.setDefaultSaveToFile(saveToFile);
+		if (saveToFile)
+		{
+			Path p = Paths.get(resultPath);
+			props.setDefaultDir(p.getParent().toString());
+		}
+	}
 }

@@ -32,6 +32,8 @@ public class MainFrame extends JFrame
 	@Autowired
 	private ResultsPanel resultsPanel;
 	@Autowired
+	private StatusBarPanel statusBarPanel;
+	@Autowired
 	private AboutAction aboutAction;
 	@Autowired
 	private PreferencesAction preferencesAction;
@@ -60,14 +62,15 @@ public class MainFrame extends JFrame
 		result.setBorder(BorderFactory.createEmptyBorder(3,3, 3, 3));
 		result.add(searchPanel, BorderLayout.NORTH);
 		result.add(resultsPanel, BorderLayout.CENTER);
+		result.add(statusBarPanel, BorderLayout.SOUTH);
 		
-		JXStatusBar statusBar = new JXStatusBar();
-		statusBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-		JLabel statusLabel = new JLabel("Ready");
-		JXStatusBar.Constraint c1 = new JXStatusBar.Constraint(); 
-		c1.setFixedWidth(100);
-		statusBar.add(statusLabel, c1);
-		result.add(statusBar, BorderLayout.SOUTH);
+//		JXStatusBar statusBar = new JXStatusBar();
+//		statusBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+//		JLabel statusLabel = new JLabel("Ready");
+//		JXStatusBar.Constraint c1 = new JXStatusBar.Constraint(); 
+//		c1.setFixedWidth(100);
+//		statusBar.add(statusLabel, c1);
+//		result.add(statusBar, BorderLayout.SOUTH);
 
 		return result;
 	}

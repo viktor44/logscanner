@@ -14,9 +14,11 @@ import org.apache.commons.lang3.NotImplementedException;
 public class SFTPFileInfo implements FileInfo
 {
 	private final transient Path path;
+	private final String host;
 	
-	public SFTPFileInfo(Path path)
+	public SFTPFileInfo(String host, Path path)
 	{
+		this.host = host;
 		this.path = path;
 	}
 
@@ -33,13 +35,21 @@ public class SFTPFileInfo implements FileInfo
 	}
 
 	@Override
-	public Path getFile() {
+	public Path getFile() 
+	{
 		return path;
 	}
 
 	@Override
-	public LocationType getLocationType() {
+	public LocationType getLocationType() 
+	{
 		return LocationType.SFTP;
+	}
+
+	@Override
+	public String getHost()
+	{
+		return host;
 	}
 
 }

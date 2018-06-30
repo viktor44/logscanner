@@ -2,6 +2,7 @@ package org.logscanner.util.fs;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
@@ -1213,13 +1214,13 @@ public class LocalDirectoryScanner {
             }
             newfiles = noLinks;
         } else {
-            directoryNamesFollowed.addFirst(dir.getFileName().toString());
+            directoryNamesFollowed.addFirst(getFileName(dir));
         }
 
         for (int i = 0; i < newfiles.size(); i++) {
         	final Path file = newfiles.get(i);
-            final String name = vpath + file.getFileName().toString();
-            final TokenizedPath newPath = new TokenizedPath(path, file.getFileName().toString());
+            final String name = vpath + getFileName(file);
+            final TokenizedPath newPath = new TokenizedPath(path, getFileName(file));
             //final File file = new File(dir, newfiles[i]);
             boolean isFile = Files.isRegularFile(file);
             final List<Path> children = new ArrayList<>();
@@ -1241,7 +1242,7 @@ public class LocalDirectoryScanner {
             } else if (Files.isDirectory(file)) { // dir
 
                 if (followSymlinks
-                    && causesIllegalSymlinkLoop(file.getFileName().toString(), dir,
+                    && causesIllegalSymlinkLoop(getFileName(file), dir,
                                                 directoryNamesFollowed)) {
                     // will be caught and redirected to Ant's logging system
                     System.err.println("skipping symbolic link "
@@ -1272,6 +1273,33 @@ public class LocalDirectoryScanner {
             directoryNamesFollowed.removeFirst();
         }
     }
+    
+    private String getFileName(Path path)
+    {
+    	// path.getFileName() == null for "\\server\forder"
+    	Path p = path.getFileName();
+    	String result = p != null ? p.toString() : path.toFile().getName();
+    	return result;
+    }
+    
+//    public static void main(String[] args) throws Exception
+//	{
+//		//Path p = Paths.get("\\\\v-uko-8r2-57\\logs");
+//    	File f = new File("\\\\v-uko-8r2-57\\logs");
+//    	//File f = new File("//v-uko-8r2-57/logs");
+//    	URI uri = f.toURI(); //URI.create("file:///\\\\v-uko-8r2-57\\logs")
+//    	System.out.println(f.getName());
+//		Path path = Paths.get("\\\\v-uko-8r2-57\\logs");
+//		//Path p = Paths.get(new URI("file:///c:/v-uko-8r2-57/logs"));
+//		//System.out.println("ZZZ: " + p.getName(p.getNameCount() - 1));
+////		System.out.println("ZZZ: " + p.getNameCount() + " | " + p.toString());
+//		
+//    	Path p = path.getFileName();
+//    	String result = p != null ? p.toString() : path.toFile().getName();
+//    	
+//    	System.out.println(result);
+//
+//	}
 
     /**
      * Process included file.

@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.logscanner.AppConstants;
 import org.logscanner.data.FileData;
@@ -37,10 +39,14 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 	{
 		for (FileData fileData : items)
 		{
-			log.info("Сохраняю {} -> {}", fileData.getFilePath(), fileData.getZipPath());
+			//log.info("Сохраняю {} -> {}", fileData.getFilePath(), fileData.getZipPath());
+			log.info("Сохраняю {}", fileData.getFilePath()); //, Runtime.getRuntime().freeMemory());
 			ZipEntry entry = new ZipEntry(fileData.getZipPath());
 			outputStream.putNextEntry(entry);
-			outputStream.write(fileData.getContent());
+			try (InputStream inputStream = fileData.getContentReader().getInputStream())
+			{
+				IOUtils.copy(inputStream, outputStream);	
+			}
 			outputStream.closeEntry();
 		}
 	}
