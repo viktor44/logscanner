@@ -3,6 +3,7 @@ package org.logscanner.gui;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
@@ -79,10 +80,15 @@ public class StatusBarPanel extends JPanel
 					{
 						if (!StringUtils.equalsAny(event.getPropertyName(), "filesToProcess", "processedFiles", "selectedFiles"))
 							return;
-						int processed = "processedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getProcessedFiles();
-						int selected = "selectedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getSelectedFiles();
-						int total = "filesToProcess".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getFilesToProcess();
-						progressLabel.setText("Обработано " + processed + " из " + total + ". Выбрано " + selected);
+						if (Objects.equals(event.getPropertyName(), "filesToProcess") && (Integer)event.getNewValue() == 0)
+							progressLabel.setText("");
+						else
+						{
+							int processed = "processedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getProcessedFiles();
+							int selected = "selectedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getSelectedFiles();
+							int total = "filesToProcess".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getFilesToProcess();
+							progressLabel.setText("Обработано " + processed + " из " + total + ". Выбрано " + selected);
+						}
 					}
 				}
 		);

@@ -144,9 +144,6 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
     		Date dt = tryToParseDate(line, dateFormat);
     		
     		boolean dateIsEmpty = dt == null; 
-    		if (!dateIsEmpty && dt.compareTo(dateFrom) > 0 && dt.compareTo(dateTo) > 0)
-    			break;
-    		
     		boolean dateInRange = false;
     		if (!dateIsEmpty)
     		{
@@ -154,7 +151,11 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
     			dateInRangeWholeFile |= dateInRange;
     			lastParsedDate = dt;
     			lastParsedDateInRange = dateInRange; 
+
+        		if (dt.compareTo(dateFrom) > 0 && dt.compareTo(dateTo) > 0)
+        			break;
     		}
+    		
     		if (dateIsEmpty || dateInRange)
     		{
     			if (searchString != null)
