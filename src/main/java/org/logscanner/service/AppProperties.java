@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.logscanner.data.Location;
 import org.logscanner.data.LocationGroup;
 import org.logscanner.data.LogPattern;
@@ -65,6 +66,7 @@ public class AppProperties
 	private String defaultDir;
 	private Boolean defaultSaveToFile;
 	private String locale = "en";
+	private String dataDir;
 	
 	@PostConstruct
 	public void init()
@@ -91,6 +93,8 @@ public class AppProperties
 				createDefaultSettings();
 			loadSettings();
 			
+			if (StringUtils.isEmpty(dataDir))
+				dataDir = appDirs.getUserDataDir("LogScanner", null, "", false);
 		} 
 		catch (IOException ex) 
 		{
@@ -176,6 +180,8 @@ public class AppProperties
 		defaultPatternCode = p.defaultPatternCode;
 		defaultSaveToFile = p.defaultSaveToFile;
 		locale = p.locale;
+		if (StringUtils.isNotBlank(p.dataDir))
+			dataDir = p.dataDir; 
 	}
 
 	public Path getPreferencesDir()
@@ -233,5 +239,10 @@ public class AppProperties
 	public String getLocale()
 	{
 		return locale;
+	}
+
+	public String getDataDir()
+	{
+		return dataDir;
 	}
 }

@@ -3,6 +3,7 @@ package org.logscanner.util.fs;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -39,7 +40,7 @@ public class ModifiedInPeriodSelector extends BaseSelector
 		BasicFileAttributes attr = null;
 		try
 		{
-			attr = Files.readAttributes(path, BasicFileAttributes.class);
+			attr = readAttributes(path);
 		}
 		catch (IOException ex)
 		{
@@ -48,7 +49,7 @@ public class ModifiedInPeriodSelector extends BaseSelector
 		}
 		creationTime = attr.creationTime();
 		lastModifiedTime = attr.lastModifiedTime();
-		boolean wrongCreationTime = creationTime.compareTo(lastModifiedTime) == 0;
+		boolean wrongCreationTime = creationTime == null || creationTime.compareTo(lastModifiedTime) == 0;
 		
 		boolean result = lastModifiedTime.toInstant().compareTo(from.toInstant()) >= 0 
 								&& (wrongCreationTime || creationTime.toInstant().compareTo(to.toInstant()) <= 0);
@@ -58,5 +59,11 @@ public class ModifiedInPeriodSelector extends BaseSelector
 		
 		return result;
 	}
+	
+	protected BasicFileAttributes readAttributes(Path path) throws IOException
+	{
+		return Files.readAttributes(path, BasicFileAttributes.class);
+	}
+	
 }
 

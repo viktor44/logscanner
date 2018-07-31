@@ -10,30 +10,35 @@ public class DirInfo implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 	
-	private String location;
+	/** Location Code (unique) */
+	private String locationCode;
+	private String host;
 	private String rootPath;
 	private List<FileInfo> files;
 
-	public List<FileInfo> getFiles() 
-	{
+	public List<FileInfo> getFiles() {
 		return files;
 	}
-	public void setFiles(List<FileInfo> files) 
-	{
+	public void setFiles(List<FileInfo> files) {
 		this.files = files;
 	}
-	public String getRootPath() 
-	{
+	public String getRootPath()	{
 		return rootPath;
 	}
-	public void setRootPath(String rootDir) 
-	{
+	public void setRootPath(String rootDir)	{
 		this.rootPath = rootDir;
 	}
-	public String getLocation() {
-		return location;
+	public String getHost() {
+		return host;
 	}
-	public void setLocation(String location) {
-		this.location = location;
+	public void setHost(String host) {
+		this.host = host;
 	}
+	public String getLocationCode() {
+		return locationCode;
+	}
+	public void setLocationCode(String locationCode) {
+		this.locationCode = locationCode;
+	}
+	
 }

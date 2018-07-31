@@ -133,6 +133,11 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 		error = null;
 		startTime = null;
 		endTime = null;
+		
+		firePropertyChange("filesToProcess", filesToProcess.intValue(), 0);
+		filesToProcess.set(0);
+		processedFiles.set(0);
+		selectedFiles.set(0);
 	}
 	
 	@Override

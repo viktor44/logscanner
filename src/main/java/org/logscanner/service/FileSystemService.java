@@ -1,6 +1,7 @@
 package org.logscanner.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.logscanner.data.ContentReader;
@@ -15,6 +16,7 @@ import org.logscanner.exception.BusinessException;
 public interface FileSystemService 
 {
 	public ContentReader readContent(FileInfo file) throws IOException, BusinessException;
+	public InputStream getInputStream(FileInfo file) throws IOException, BusinessException;
 	public String getRelativePath(FileInfo file, String basePath);
 	public List<FileInfo> listFiles(Location location, FilterParams filterParams) throws IOException;
 }

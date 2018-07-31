@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -33,19 +35,26 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 
 	private StepExecution stepExecution;
 	private ZipOutputStream outputStream;
+	private Set<String> files;
 
 	@Override
 	public synchronized void write(List<? extends FileData> items) throws Exception 
 	{
 		for (FileData fileData : items)
 		{
-			//log.info("Сохраняю {} -> {}", fileData.getFilePath(), fileData.getZipPath());
-			log.info("Сохраняю {}", fileData.getFilePath()); //, Runtime.getRuntime().freeMemory());
-			ZipEntry entry = new ZipEntry(fileData.getZipPath());
+			String zipPath = fileData.getZipPath();
+			if (files.contains(zipPath))
+			{
+				log.warn("Файл {} уже в архиве. Пропускаю", zipPath);
+				continue;
+			}
+			files.add(zipPath);
+			log.info("Сохраняю {} в {}", fileData.getFilePath(), zipPath); //, Runtime.getRuntime().freeMemory());
+			ZipEntry entry = new ZipEntry(zipPath);
 			outputStream.putNextEntry(entry);
 			try (InputStream inputStream = fileData.getContentReader().getInputStream())
 			{
-				IOUtils.copy(inputStream, outputStream);	
+				IOUtils.copy(inputStream, outputStream);
 			}
 			outputStream.closeEntry();
 		}
@@ -56,6 +65,7 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 	{
 		if (!isInitialized()) 
 		{
+			files = new ConcurrentSkipListSet<>();
 			if (stepExecution.getJobParameters().getLong(AppConstants.JOB_PARAM_SAVE_TO_ARCHIVE) == 1L)
 			{
 				String resultFile = stepExecution.getJobParameters().getString(AppConstants.JOB_PARAM_OUTPUT_ARCHIVE_NAME);
@@ -92,6 +102,7 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 		finally 
 		{
 			outputStream = null;
+			files = null;
 		}
 	}
 

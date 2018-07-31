@@ -47,10 +47,10 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * открываем InputStream второй раз
+ * читаем файл в память, используем reset. используем ZipInputStream
  * @author Victor Kadachigov
  */
-public class FileContentProcessor implements ItemProcessor<FileInfo, FileData> 
+public class FileContentProcessor3 implements ItemProcessor<FileInfo, FileData> 
 {
 	private static Logger log = LoggerFactory.getLogger(FileContentProcessor.class);
 
@@ -78,25 +78,25 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
 		{
 			FileData result = null;
 			FileSystemService fileSystemService = fileServiceSelector.select(file.getLocationType());
-			FileData fileData = new FileData();
-			fileData.setLocation(file.getHost());
-			fileData.setFilePath(file.getFilePath());
-			fileData.setZipPath(getZipPath(file));
-			fileData.setContentReader(fileSystemService.readContent(file));
-			try (InputStream inputStream = fileData.getContentReader().getInputStream())
+			try (InputStream inputStream = fileSystemService.getInputStream(file))
 			{
-//				inputStream.mark(Integer.MAX_VALUE);
+				inputStream.mark(Integer.MAX_VALUE);
+				FileData fileData = new FileData();
+				fileData.setLocation(file.getHost());
+				fileData.setFilePath(file.getFilePath());
+				fileData.setZipPath(getZipPath(file));
 				if (match(inputStream, fileData))
 				{
-//					inputStream.reset();
-//					fileData.setContentReader(new ByteContentReader(IOUtils.toByteArray(inputStream)));
+					inputStream.reset();
+					fileData.setContentReader(new ByteContentReader(IOUtils.toByteArray(inputStream)));
 					resultModel.addSelectedFile();
 					result = fileData;
 				}
 			}
 			return result;
 		}
-		catch (FileTooBigException ex) {
+		catch (FileTooBigException ex) 
+		{
 			log.error(ex.getMessage());
 			return null;
 		}

@@ -36,6 +36,8 @@ import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.privatejgoodies.common.base.Objects;
+
 /**
  * @author Victor Kadachigov
  */
@@ -66,7 +68,7 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 		FileSystemService fileSystemService = fileServiceSelector.select(location.getType());
 		List<FileInfo> list = fileSystemService.listFiles(location, filterParams); 
 		
-		log.info("{} выбрано {} файлов", location.getPath(), list.size());
+		log.info("{} {} выбрано {} файлов", location.getCode(), location.getPath(), list.size());
 		
 		if (!list.isEmpty())
 		{
@@ -74,9 +76,16 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 			
 			Collections.sort(list, new NameComparator());
 			result = new DirInfo();
-			result.setLocation(location.getName());
+			result.setLocationCode(location.getCode());
+			result.setHost(location.getHost());
 			result.setRootPath(location.getPath());
 			result.setFiles(list);
+			
+//			for (FileInfo fi : list)
+//			{
+//				if (!Objects.equals(fi.getHost(), result.getHost()))
+//					throw new RuntimeException("Not equals " + fi.getHost() + " " + result.getLocationCode());
+//			}
 		}
 		
 		return result;

@@ -11,6 +11,7 @@ import java.nio.file.Path;
 public interface FileInfo extends Serializable
 {
 	public LocationType getLocationType();
+//	public String getLocationCode();
 //	public InputStream getInputStream() throws IOException;
 //	public long length();
 	public Path getFile();

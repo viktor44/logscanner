@@ -3,21 +3,25 @@ package org.logscanner;
 import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.file.spi.FileSystemProvider;
-import java.util.ServiceLoader;
+import java.net.URL;
 
 import javax.swing.UIManager;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.gui.MainFrame;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.spi.JoranException;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import net.harawata.appdirs.AppDirsFactory;
 
 /**
  * @author Victor Kadachigov
@@ -36,8 +40,6 @@ public class App
 //		ServiceLoader.load(FileSystemProvider.class, ClassLoader.getSystemClassLoader())
 //			.forEach(service -> System.out.println("XXX: " + service)); 
 	
-//		System.getProperties().forEach( (k,v) -> { System.out.println("" + k + " : " + v); } );
-		
     	try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -46,6 +48,8 @@ public class App
 		{
 			ex.printStackTrace();
 		}
+
+//		System.getProperties().forEach( (k,v) -> { System.out.println("" + k + " : " + v); } );
     	
 		boolean consoleApp = false;
 		boolean configError = false;
@@ -99,6 +103,15 @@ public class App
 				System.exit(0);
 			}
 		}
+	}
+	
+	private static void reloadLoggerConfig() throws JoranException
+	{
+		LoggerContext loggerContext = (LoggerContext)LoggerFactory.getILoggerFactory();
+		ContextInitializer ci = new ContextInitializer(loggerContext);
+		URL url = ci.findURLOfDefaultConfigurationFile(true);
+		loggerContext.reset();
+		ci.configureByResource(url);
 	}
 
 	private static void createAndShowGUI(MainFrame frame) 

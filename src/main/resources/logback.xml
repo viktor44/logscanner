@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-<!--  
-	<appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<append>true</append>
+
+	<property name="LOG_PATH" value="${java.io.tmpdir}" />
+
+	<appender name="fileAppender" class="ch.qos.logback.core.FileAppender">
+		<file>${LOG_PATH}/logscanner.log</file>
+		<append>false</append>
 		<encoder>
 			<charset>UTF-8</charset>
 			<pattern>%d [%t] %5p [%c{0}:%M:%L] %m%throwable%n</pattern>
@@ -10,13 +13,6 @@
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>INFO</level>
 		</filter>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern><![CDATA[d:/temp/logscanner.%d{yyyy-MM}_%i.log.zip]]></fileNamePattern>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>100MB</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
 	</appender>
 
 	<appender name="asyncFileAppender" class="ch.qos.logback.classic.AsyncAppender">
@@ -25,7 +21,7 @@
 		<includeCallerData>true</includeCallerData>
 		<appender-ref ref="fileAppender" />
 	</appender>
--->
+
 	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<charset>UTF-8</charset>
@@ -34,7 +30,7 @@
 	</appender>
 	
 	<root level="INFO">
-<!--  		<appender-ref ref="asyncFileAppender" />  -->
+  		<appender-ref ref="asyncFileAppender" /> 
 		<appender-ref ref="consoleAppender" />
 	</root>
 </configuration>

@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,12 +51,12 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * открываем InputStream второй раз
+ * читаем файл в память, используем reset. используем ArchiveInputStream
  * @author Victor Kadachigov
  */
-public class FileContentProcessor implements ItemProcessor<FileInfo, FileData> 
+public class FileContentProcessor2 implements ItemProcessor<FileInfo, FileData> 
 {
-	private static Logger log = LoggerFactory.getLogger(FileContentProcessor.class);
+	private static Logger log = LoggerFactory.getLogger(FileContentProcessor2.class);
 
 	@Autowired
 	private JobResultModel resultModel;
@@ -78,46 +82,46 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
 		{
 			FileData result = null;
 			FileSystemService fileSystemService = fileServiceSelector.select(file.getLocationType());
-			FileData fileData = new FileData();
-			fileData.setLocation(file.getHost());
-			fileData.setFilePath(file.getFilePath());
-			fileData.setZipPath(getZipPath(file));
-			fileData.setContentReader(fileSystemService.readContent(file));
-			try (InputStream inputStream = fileData.getContentReader().getInputStream())
+			try (InputStream inputStream = fileSystemService.getInputStream(file))
 			{
-//				inputStream.mark(Integer.MAX_VALUE);
+				inputStream.mark(Integer.MAX_VALUE);
+				FileData fileData = new FileData();
+				fileData.setLocation(file.getHost());
+				fileData.setFilePath(file.getFilePath());
+				fileData.setZipPath(getZipPath(file));
 				if (match(inputStream, fileData))
 				{
-//					inputStream.reset();
-//					fileData.setContentReader(new ByteContentReader(IOUtils.toByteArray(inputStream)));
+					inputStream.reset();
+					fileData.setContentReader(new ByteContentReader(IOUtils.toByteArray(inputStream)));
 					resultModel.addSelectedFile();
 					result = fileData;
 				}
 			}
 			return result;
 		}
-		catch (FileTooBigException ex) {
+		catch (FileTooBigException ex)
+		{
 			log.error(ex.getMessage());
 			return null;
 		}
-		catch (IOException ex)
+		catch (IOException | ArchiveException ex)
 		{
 			log.error("", ex);
 			return null;
 		}
 	}
 
-    private boolean match(InputStream inputStream, FileData fileData) throws IOException 
+    private boolean match(InputStream inputStream, FileData fileData) throws IOException, ArchiveException 
     {
     	boolean result = false;
 
-		log.info("Проверяю {} {}", fileData.getLocation(), fileData.getFilePath());
+		log.info("Проверяю {}", fileData.getFilePath());
 		resultModel.addProcessedFile();
 		
     	if (FilenameUtils.isExtension(fileData.getFilePath(), "zip"))
     	{
-    		ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-			ZipEntry zipEntry = zipInputStream.getNextEntry();
+    		ArchiveInputStream zipInputStream = (new ArchiveStreamFactory()).createArchiveInputStream(ArchiveStreamFactory.ZIP, inputStream);
+			ArchiveEntry zipEntry = zipInputStream.getNextEntry();
 			while (zipEntry != null && !result)
 			{
 				if (!zipEntry.isDirectory())
@@ -224,7 +228,7 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
 		s = "2018-05-17 14:18:43,682 [INFO ] [ru.sbrf.depositpf.contract.service.PerformedOperationService] [[deposit-contract]-server-rejected-thread-14] - Сохранили";
 		s = "2018-05-17 14:18:43,682 ";
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
-		FileContentProcessor fcp = new FileContentProcessor();
+		FileContentProcessor2 fcp = new FileContentProcessor2();
 		Date d = df.parse(s); // fcp.tryToParseDate(s, df);
 		System.out.println("ZZZZ: " + (d != null ? df.format(d) : "null"));
 	}

@@ -5,6 +5,8 @@ import org.logscanner.jobs.DirectoryFilesProcessor;
 import org.logscanner.jobs.DirsQueueReader;
 import org.logscanner.jobs.DirsQueueWriter;
 import org.logscanner.jobs.FileContentProcessor;
+import org.logscanner.jobs.FileContentProcessor2;
+import org.logscanner.jobs.FileContentProcessor3;
 import org.logscanner.jobs.LogWriter;
 import org.logscanner.jobs.PackFilesWriter;
 import org.logscanner.service.AppProperties;
@@ -158,7 +160,7 @@ public class BatchConfig extends DefaultBatchConfigurer
 	@Bean
 	protected ItemProcessor<? extends Object, ? extends Object> fileContentProcessor() 
 	{
-		return new FileContentProcessor();
+		return new FileContentProcessor3();
 	}
 
 	@Bean

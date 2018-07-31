@@ -29,12 +29,6 @@ public class SFTPFileInfo implements FileInfo
 	}
 
 	@Override
-	public String toString()
-	{
-		return "SftpFileInfo [path=" + path + "]";
-	}
-
-	@Override
 	public Path getFile() 
 	{
 		return path;
@@ -50,6 +44,18 @@ public class SFTPFileInfo implements FileInfo
 	public String getHost()
 	{
 		return host;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("SFTPFileInfo [path=");
+		builder.append(path);
+		builder.append(", host=");
+		builder.append(host);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

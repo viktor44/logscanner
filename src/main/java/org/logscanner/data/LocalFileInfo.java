@@ -25,6 +25,7 @@ public class LocalFileInfo implements FileInfo
 		return file.toString();
 	}
 
+	@Override
 	public Path getFile() 
 	{
 		return file;

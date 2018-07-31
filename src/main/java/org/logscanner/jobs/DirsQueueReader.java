@@ -46,11 +46,11 @@ public class DirsQueueReader implements ItemReader<FileInfo>
 				ExecutionContext stepContext = stepExecution.getJobExecution().getExecutionContext();
 		        BlockingQueue<DirInfo> queue = (BlockingQueue<DirInfo>)stepContext.get(AppConstants.PROP_DIRS_INFO);
         		if (queue != null)
-        		{ 
+        		{
         			DirInfo currentDir = queue.poll();
         			if (currentDir != null)
         			{
-            			log.info("Обрабатываю {}", currentDir.getRootPath());
+            			log.info("Обрабатываю {} {} {}", currentDir.getLocationCode(), currentDir.getHost(), currentDir.getRootPath());
             			iterator = currentDir.getFiles().iterator();
         			}
         		}
@@ -65,6 +65,7 @@ public class DirsQueueReader implements ItemReader<FileInfo>
     public void setStepExecution(StepExecution stepExecution) 
     {
         this.stepExecution = stepExecution;
+        this.iterator = null;
     }
 
 }

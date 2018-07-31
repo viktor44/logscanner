@@ -60,18 +60,23 @@ public class SearchAction extends BaseAction {
 		resultModel.stopping();
 		jobOperator.stop(searchModel.getExecutionId());
 	}
+	
+	private boolean validate() {
+		if (searchModel.getSelectedLocations().isEmpty()) {
+			MessageBox.showMessageDialog(null, "Не выбрано ни одного расположения для поиска"); 
+			return false;
+		}
+		if (searchModel.isSaveToFile() && Files.exists(Paths.get(searchModel.getResultPath()))) {
+			if (!MessageBox.showConfirmDialog(null, MessageFormat.format("Файл {0} уже существует. Перезаписать?", searchModel.getResultPath()))) 
+				return false;
+		}
+		return true;
+	}
 
 	private void start() throws Exception {
-		if (searchModel.getSelectedLocations().isEmpty())
-		{
-			MessageBox.showMessageDialog(null, "Не выбрано ни одного расположения для поиска"); 
+		if (!validate())
 			return;
-		}
-		if (searchModel.isSaveToFile() && Files.exists(Paths.get(searchModel.getResultPath())))
-		{
-			if (!MessageBox.showConfirmDialog(null, MessageFormat.format("Файл {0} уже существует. Перезаписать?", searchModel.getResultPath()))) 
-				return;
-		}
+		
 		JobParametersBuilder jobParamsBuilder = new JobParametersBuilder()
 				.addString(AppConstants.JOB_PARAM_ID, UUID.randomUUID().toString())
 				.addDate(AppConstants.JOB_PARAM_FROM, Date.from(searchModel.getFrom().atZone(ZoneId.systemDefault()).toInstant()))

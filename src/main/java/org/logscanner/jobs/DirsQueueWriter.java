@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.logscanner.AppConstants;
 import org.logscanner.data.DirInfo;
+import org.logscanner.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepExecution;
@@ -35,13 +36,17 @@ public class DirsQueueWriter implements ItemWriter<DirInfo>
         		queue = (BlockingQueue<DirInfo>)stepContext.get(AppConstants.PROP_DIRS_INFO);
         		if (queue == null)
         		{
-                	queue = new ArrayBlockingQueue<>(100);
+                	queue = new ArrayBlockingQueue<>(1000);
                 	stepContext.put(AppConstants.PROP_DIRS_INFO, queue);
         		}
 			}
         }
         for (DirInfo di : items)
+        {
+        	if (queue.contains(di))
+        		throw new BusinessException("" + di.getLocationCode() + " " + di.getRootPath() + " уже тут");
         	queue.put(di);
+        }
 	}
 
     @BeforeStep

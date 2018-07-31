@@ -2,8 +2,10 @@ package org.logscanner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -19,6 +21,7 @@ import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.logscanner.App;
 import org.logscanner.common.gui.BaseDialog;
+import org.logscanner.common.gui.MessageBox;
 import org.logscanner.common.gui.TableColumnAdjuster;
 import org.logscanner.data.Location;
 import org.logscanner.data.LocationGroup;
@@ -51,7 +54,7 @@ public class SelectLocationsDialog extends BaseDialog
 	{
 		return new JButton[] { dialogOkButton(), dialogCancelButton("Отмена") };
 	}
-
+	
 	@Override
 	protected JComponent createMainPanel() 
 	{
@@ -77,6 +80,35 @@ public class SelectLocationsDialog extends BaseDialog
 	public Set<String> getSelectedLocations() 
 	{
 		return treeTableModel.getSelectedItems();
+	}
+	
+	@Override
+	protected boolean canClose(String actionCommand)
+	{
+		if (!Objects.equals(actionCommand, ACTION_OK))
+			return true;
+		
+		Boolean result = null;
+		LocationDao locationDao = ServiceHelper.getBean(LocationDao.class);
+		List<Location> locations = new ArrayList<>();
+		for (String lid : getSelectedLocations())
+		{
+			Location loc = locationDao.getByCode(lid);
+			if (loc == null) // LocationGroup
+				continue;
+			for (Location l : locations)
+			{
+				if (Objects.equals(l.getHost(), loc.getHost()) && Objects.equals(l.getPath(), loc.getPath()))
+				{
+					result = MessageBox.showConfirmDialog(null, "" + l.getCode() + " и " + loc.getCode() + " имеют одинаковые хост и путь. Продолжить?");
+					break;
+				}
+			}
+			if (result != null)
+				break;
+			locations.add(loc);
+		}
+		return result != null ? result : true;
 	}
 
 	private class LocationsTreeTableModel implements TreeTableModel
