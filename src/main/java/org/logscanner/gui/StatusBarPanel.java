@@ -20,8 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.privatejgoodies.common.base.Objects;
-
 @Component
 public class StatusBarPanel extends JPanel
 {
