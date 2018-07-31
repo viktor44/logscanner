@@ -3,6 +3,7 @@ package org.logscanner.gui;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
