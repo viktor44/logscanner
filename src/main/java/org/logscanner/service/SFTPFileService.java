@@ -72,7 +72,7 @@ public class SFTPFileService extends BaseFileService
 		List<FileInfo> list = new ArrayList<>();
 		String includedFiles[] = dirScanner.getIncludedFiles();
 		Arrays.stream(includedFiles)
-				.forEach(path -> list.add(new SFTPFileInfo(location.getHost(), basedir.resolve(path))));
+				.forEach(path -> list.add(new SFTPFileInfo(location.getCode(), location.getHost(), basedir.resolve(path))));
 		return list;
 	}
 }

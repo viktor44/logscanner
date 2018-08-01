@@ -76,7 +76,7 @@ public class LocalFileService extends BaseFileService
 		List<FileInfo> list = new ArrayList<>();
 		String includedFiles[] = dirScanner.getIncludedFiles();
 		Arrays.stream(includedFiles)
-				.forEach(path -> list.add(new LocalFileInfo(Paths.get(location.getPath(), path))));
+				.forEach(path -> list.add(new LocalFileInfo(location.getCode(), Paths.get(location.getPath(), path))));
 		return list;
 	}
 }

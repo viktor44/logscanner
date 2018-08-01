@@ -5,7 +5,7 @@ package org.logscanner.data;
  */
 public class FileData 
 {
-	private String location;
+	private String locationCode;
 	private String filePath;
 	private String zipPath;
 	private ContentReader contentReader;
@@ -22,11 +22,11 @@ public class FileData
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-	public String getLocation() {
-		return location;
+	public String getLocationCode() {
+		return locationCode;
 	}
-	public void setLocation(String location) {
-		this.location = location;
+	public void setLocationCode(String location) {
+		this.locationCode = location;
 	}
 	public ContentReader getContentReader() {
 		return contentReader;

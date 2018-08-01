@@ -12,10 +12,12 @@ import java.nio.file.Path;
  */
 public class LocalFileInfo implements FileInfo
 {
+	private final String locationCode;
 	private final transient Path file;
 	
-	public LocalFileInfo(Path file)
+	public LocalFileInfo(String locationCode, Path file)
 	{
+		this.locationCode = locationCode;
 		this.file = file;
 	}
 	
@@ -24,21 +26,35 @@ public class LocalFileInfo implements FileInfo
 	{
 		return file.toString();
 	}
-
 	@Override
 	public Path getFile() 
 	{
 		return file;
 	}
-
 	@Override
-	public LocationType getLocationType() {
+	public LocationType getLocationType() 
+	{
 		return LocationType.LOCAL;
 	}
-
 	@Override
 	public String getHost()
 	{
 		return null;
+	}
+	@Override
+	public String getLocationCode() 
+	{
+		return locationCode;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("LocalFileInfo [locationCode=");
+		builder.append(locationCode);
+		builder.append(", file=");
+		builder.append(file);
+		builder.append("]");
+		return builder.toString();
 	}
 }

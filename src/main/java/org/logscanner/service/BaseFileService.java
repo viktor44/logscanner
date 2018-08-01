@@ -35,7 +35,7 @@ public abstract class BaseFileService implements FileSystemService
 	private CacheManager cacheManager;
 	
 	@Override
-	public ContentReader readContent(FileInfo file) throws IOException, BusinessException
+	public ContentReader readContent(FileInfo file, ReaderType reader) throws IOException, BusinessException
 	{
 		Path path = file.getFile();
 		long size = Files.size(path);

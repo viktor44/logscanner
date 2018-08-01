@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.commons.lang3.StringUtils;
 import org.logscanner.AppConstants;
 import org.logscanner.data.DirInfo;
 import org.logscanner.data.FileInfo;
@@ -50,7 +51,7 @@ public class DirsQueueReader implements ItemReader<FileInfo>
         			DirInfo currentDir = queue.poll();
         			if (currentDir != null)
         			{
-            			log.info("Обрабатываю {} {} {}", currentDir.getLocationCode(), currentDir.getHost(), currentDir.getRootPath());
+            			log.info("Обрабатываю {} {} {}", currentDir.getLocationCode(), StringUtils.defaultString(currentDir.getHost()), currentDir.getRootPath());
             			iterator = currentDir.getFiles().iterator();
         			}
         		}

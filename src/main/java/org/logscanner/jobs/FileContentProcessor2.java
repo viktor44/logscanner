@@ -86,7 +86,7 @@ public class FileContentProcessor2 implements ItemProcessor<FileInfo, FileData>
 			{
 				inputStream.mark(Integer.MAX_VALUE);
 				FileData fileData = new FileData();
-				fileData.setLocation(file.getHost());
+				fileData.setLocationCode(file.getLocationCode());
 				fileData.setFilePath(file.getFilePath());
 				fileData.setZipPath(getZipPath(file));
 				if (match(inputStream, fileData))
@@ -196,7 +196,7 @@ public class FileContentProcessor2 implements ItemProcessor<FileInfo, FileData>
     	{
     		FileTime creationTime = FileTime.from(firstParsedDate.toInstant());
     		BasicFileAttributes attr = new CacheManager.BasicFileAttributesImpl(null, creationTime, -1);
-    		cacheManager.updateAttributes(fileData.getLocation(), fileData.getFilePath(), attr);
+    		cacheManager.updateAttributes(fileData.getLocationCode(), fileData.getFilePath(), attr);
     	}
     	result |= lastParsedDate == null; // we can't check date at all
     	return result;

@@ -44,7 +44,6 @@ public class CacheManager
 	@PostConstruct
 	public void init()
 	{
-		//JobResultModel jobResultModel = ServiceHelper.getBean(JobResultModel.class);
 		jobResultModel.addPropertyChangeListener("jobState", (event) -> {
 			if (event.getNewValue() == JobResultModel.JobState.STOPPED)
 				caches.forEach((locationCode, cache) -> saveCache(locationCode, cache));
@@ -71,11 +70,8 @@ public class CacheManager
 		if (attr.size() >= 0)
 			fileInfo.setSize(attr.size());
 
-		if (!opt.isPresent())
-		{
-			Cache cache = findCache(locationCode);
-			cache.addFile(fileInfo);
-		}
+		Cache cache = findCache(locationCode);
+		cache.addFile(fileInfo);
 	}
 	
 	private Optional<CacheFileInfo> findFileInfo(String locationCode, String path) 
@@ -96,10 +92,8 @@ public class CacheManager
 		{
 			result = loadCache(locationCode);
 			if (result == null)
-			{
 				result = new Cache();
-				caches.put(locationCode, result);
-			}
+			caches.put(locationCode, result);
 		}
 		return result;
 	}

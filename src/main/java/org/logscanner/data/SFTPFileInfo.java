@@ -13,11 +13,13 @@ import org.apache.commons.lang3.NotImplementedException;
  */
 public class SFTPFileInfo implements FileInfo
 {
+	private final String locationCode;
 	private final transient Path path;
 	private final String host;
 	
-	public SFTPFileInfo(String host, Path path)
+	public SFTPFileInfo(String locationCode, String host, Path path)
 	{
+		this.locationCode = locationCode;
 		this.host = host;
 		this.path = path;
 	}
@@ -47,10 +49,17 @@ public class SFTPFileInfo implements FileInfo
 	}
 
 	@Override
-	public String toString()
+	public String getLocationCode() 
 	{
+		return locationCode;
+	}
+
+	@Override
+	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("SFTPFileInfo [path=");
+		builder.append("SFTPFileInfo [locationCode=");
+		builder.append(locationCode);
+		builder.append(", path=");
 		builder.append(path);
 		builder.append(", host=");
 		builder.append(host);

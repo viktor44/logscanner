@@ -52,7 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class FileContentProcessor3 implements ItemProcessor<FileInfo, FileData> 
 {
-	private static Logger log = LoggerFactory.getLogger(FileContentProcessor.class);
+	private static Logger log = LoggerFactory.getLogger(FileContentProcessor3.class);
 
 	@Autowired
 	private JobResultModel resultModel;
@@ -82,7 +82,7 @@ public class FileContentProcessor3 implements ItemProcessor<FileInfo, FileData>
 			{
 				inputStream.mark(Integer.MAX_VALUE);
 				FileData fileData = new FileData();
-				fileData.setLocation(file.getHost());
+				fileData.setLocationCode(file.getLocationCode());
 				fileData.setFilePath(file.getFilePath());
 				fileData.setZipPath(getZipPath(file));
 				if (match(inputStream, fileData))
@@ -111,7 +111,7 @@ public class FileContentProcessor3 implements ItemProcessor<FileInfo, FileData>
     {
     	boolean result = false;
 
-		log.info("Проверяю {} {}", fileData.getLocation(), fileData.getFilePath());
+		log.info("Проверяю {} {}", fileData.getLocationCode(), fileData.getFilePath());
 		resultModel.addProcessedFile();
 		
     	if (FilenameUtils.isExtension(fileData.getFilePath(), "zip"))
@@ -192,7 +192,7 @@ public class FileContentProcessor3 implements ItemProcessor<FileInfo, FileData>
     	{
     		FileTime creationTime = FileTime.from(firstParsedDate.toInstant());
     		BasicFileAttributes attr = new CacheManager.BasicFileAttributesImpl(null, creationTime, -1);
-    		cacheManager.updateAttributes(fileData.getLocation(), fileData.getFilePath(), attr);
+    		cacheManager.updateAttributes(fileData.getLocationCode(), fileData.getFilePath(), attr);
     	}
     	result |= lastParsedDate == null; // we can't check date at all
     	return result;
