@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -72,7 +74,10 @@ public class SFTPFileService extends BaseFileService
 		List<FileInfo> list = new ArrayList<>();
 		String includedFiles[] = dirScanner.getIncludedFiles();
 		Arrays.stream(includedFiles)
-				.forEach(path -> list.add(new SFTPFileInfo(location.getCode(), location.getHost(), basedir.resolve(path))));
+				.forEach(path -> {
+						SFTPFileInfo fileInfo = new SFTPFileInfo(location.getCode(), location.getHost(), basedir.resolve(path));
+						list.add(fillAttributes(fileInfo));	
+				});
 		return list;
 	}
 }

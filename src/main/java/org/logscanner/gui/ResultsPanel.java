@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.logscanner.common.gui.LeftDotRenderer;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.data.LogEvent;
+import org.logscanner.logger.LogUtils;
 import org.logscanner.service.JobResultModel;
 import org.oxbow.swingbits.dialog.task.TaskDialog;
 import org.oxbow.swingbits.dialog.task.TaskDialogs;
@@ -135,7 +136,7 @@ public class ResultsPanel extends JPanel
 					        		MessageBox.showMessageDialog(
 						        			null, 
 				        					"Готово. Работали " 
-				        						+ createDurationString(resultModel.getStartTime(), resultModel.getEndTime())
+				        						+ LogUtils.createDurationString(resultModel.getStartTime(), resultModel.getEndTime())
 					        		);
 					        	else
 					        		MessageBox.showExceptionDialog(null, "Ошибка", resultModel.getError());
@@ -146,16 +147,6 @@ public class ResultsPanel extends JPanel
 		);
 	}
 	
-	private static String createDurationString(LocalTime start, LocalTime end)
-	{
-		Duration d = Duration.between(start, end);
-		long hours = d.toHours();
-		d = d.minusHours(hours);
-		long minutes = d.toMinutes();
-		d = d.minusMinutes(minutes);
-		long seconds = d.getSeconds();
-		return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-	}
 	
 //	public static void main(String[] args)
 //	{

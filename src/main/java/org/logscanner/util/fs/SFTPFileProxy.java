@@ -10,6 +10,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * @author Victor Kadachigov
+ */
 public class SFTPFileProxy extends File
 {
 	private final Path path;

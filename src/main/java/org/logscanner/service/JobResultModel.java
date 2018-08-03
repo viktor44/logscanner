@@ -18,6 +18,8 @@ import javax.swing.event.SwingPropertyChangeSupport;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.logscanner.data.LogEvent;
+import org.logscanner.logger.LogUtils;
+import org.logscanner.logger.StatisticsPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
@@ -161,6 +163,7 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 	public void beforeJob(JobExecution jobExecution) 
 	{
 		log.info("beforeJob({})", jobExecution);
+		
 		clear();
 		startTime = jobExecution.getStartTime()
 						.toInstant()
@@ -173,10 +176,14 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 	public void afterJob(JobExecution jobExecution) 
 	{
 		log.info("afterJob({})", jobExecution);
+		
 		endTime = jobExecution.getEndTime()
 						.toInstant()
 		  				.atZone(ZoneId.systemDefault())
 		  				.toLocalTime();
+		
+		log.info("Work time {}", LogUtils.createDurationString(startTime, endTime));		
+		log.info((new StatisticsPrinter()).print());
 		if (jobExecution.getStatus() == BatchStatus.FAILED || jobExecution.getStatus() == BatchStatus.UNKNOWN)
 		{
 			List<Throwable> list = jobExecution.getAllFailureExceptions();

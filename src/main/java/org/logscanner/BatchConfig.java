@@ -9,6 +9,8 @@ import org.logscanner.jobs.FileContentProcessor2;
 import org.logscanner.jobs.FileContentProcessor3;
 import org.logscanner.jobs.LogWriter;
 import org.logscanner.jobs.PackFilesWriter;
+import org.logscanner.jobs.PackFilesWriter2;
+import org.logscanner.jobs.PackFilesWriter3;
 import org.logscanner.service.AppProperties;
 import org.logscanner.service.JobResultModel;
 import org.springframework.batch.core.Job;
@@ -154,13 +156,13 @@ public class BatchConfig extends DefaultBatchConfigurer
 	@Bean
 	protected ItemWriter<? extends Object> packFilesWriter()
 	{
-		return new PackFilesWriter();
+		return new PackFilesWriter3();
 	}
 	
 	@Bean
 	protected ItemProcessor<? extends Object, ? extends Object> fileContentProcessor() 
 	{
-		return new FileContentProcessor3();
+		return new FileContentProcessor();
 	}
 
 	@Bean

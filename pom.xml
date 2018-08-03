@@ -99,10 +99,10 @@
 									<jre>
 										<path>./jre</path>
 										<minVersion>1.8.0</minVersion>
-										<maxHeapSize>4096</maxHeapSize>
-										<maxHeapPercent>75</maxHeapPercent>
+<!-- 										<maxHeapSize>3072</maxHeapSize> -->
+<!-- 										<maxHeapPercent>75</maxHeapPercent> -->
 										<opts>
-											<opt>-XX:+UseG1GC</opt>
+											<opt>-Xmx1g</opt>
 											<opt>-XX:MinHeapFreeRatio=15</opt>
 											<opt>-XX:MaxHeapFreeRatio=30</opt>
 										</opts>
@@ -269,5 +269,20 @@
 			<artifactId>assertj-core</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>com.jamonapi</groupId>
+            <artifactId>jamon</artifactId>
+            <version>2.81</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>*</groupId>
+            		<artifactId>*</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
 	</dependencies>
 </project>

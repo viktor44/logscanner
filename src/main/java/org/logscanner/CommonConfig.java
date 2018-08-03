@@ -2,6 +2,7 @@ package org.logscanner;
 
 import java.nio.file.attribute.FileTime;
 
+import org.logscanner.logger.EnableLogger;
 import org.logscanner.util.ServiceHelper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * @author Victor Kadachigov
  */
 @Configuration
+@EnableLogger
 public class CommonConfig 
 {
 	@Bean

@@ -12,6 +12,9 @@ import org.apache.tools.ant.BuildException;
 
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
 
+/**
+ * @author Victor Kadachigov
+ */
 public class SFTPDirectoryScanner extends LocalDirectoryScanner {
 
 	private String host;

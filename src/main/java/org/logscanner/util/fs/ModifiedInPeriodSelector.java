@@ -17,6 +17,9 @@ import org.apache.tools.ant.types.selectors.BaseSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Victor Kadachigov
+ */
 public class ModifiedInPeriodSelector extends BaseSelector
 {
 	private static final Logger log = LoggerFactory.getLogger(ModifiedInPeriodSelector.class);

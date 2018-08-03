@@ -11,8 +11,15 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator;
+import org.apache.commons.compress.archivers.zip.ScatterZipOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.lang3.NotImplementedException;
 import org.logscanner.AppConstants;
 import org.logscanner.data.FileData;
 import org.logscanner.data.LogEvent;
@@ -29,20 +36,22 @@ import org.springframework.batch.item.support.AbstractItemStreamItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * using ZipOutputStream
+ * using commons-compress
  * @author Victor Kadachigov
  */
-public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
+public class PackFilesWriter3 extends AbstractItemStreamItemWriter<FileData>
 {
-	private static Logger log = LoggerFactory.getLogger(PackFilesWriter.class);
+	private static Logger log = LoggerFactory.getLogger(PackFilesWriter3.class);
 
+	
 	private StepExecution stepExecution;
-	private ZipOutputStream outputStream;
+	private ParallelScatterZipCreator zipCreator;
+	private ZipArchiveOutputStream outputStream;
 	private Set<String> files;
 
 	@Override
 	@Logged(level = Level.DEBUG)
-	public synchronized void write(List<? extends FileData> items) throws Exception 
+	public void write(List<? extends FileData> items) throws Exception 
 	{
 		for (FileData fileData : items)
 		{
@@ -54,13 +63,37 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 			}
 			files.add(zipPath);
 			log.info("Сохраняю {} в {}", fileData.getFilePath(), zipPath); //, Runtime.getRuntime().freeMemory());
-			ZipEntry entry = new ZipEntry(zipPath);
-			outputStream.putNextEntry(entry);
-			try (InputStream inputStream = fileData.getContentReader().getInputStream())
+			
+			try (ScatterZipOutputStream os = ScatterZipOutputStream.fileBased(File.createTempFile("zip", ".notzip")))
 			{
-				IOUtils.copy(inputStream, outputStream);
+				ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(zipPath);
+				zipArchiveEntry.setMethod(ZipArchiveEntry.DEFLATED);
+				os.addArchiveEntry(
+						ZipArchiveEntryRequest.createZipArchiveEntryRequest(
+								zipArchiveEntry,
+								new InputStreamSupplier() 
+								{
+									@Override
+									public InputStream get() 
+									{
+										try
+										{
+											return fileData.getContentReader().getInputStream();
+										}
+										catch (IOException ex)
+										{
+											throw new RuntimeException(ex);
+										}
+									}
+								}
+						)
+				);
+				
+				synchronized (outputStream)
+				{
+					os.writeTo(outputStream);	
+				}
 			}
-			outputStream.closeEntry();
 		}
 	}
 	
@@ -79,15 +112,16 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 				
 				try 
 				{
-					outputStream = new ZipOutputStream(new FileOutputStream(file));
+					zipCreator = new ParallelScatterZipCreator();
+					outputStream = new ZipArchiveOutputStream(file);
 				} 
-				catch (FileNotFoundException ex) 
+				catch (IOException ex) 
 				{
 					throw new ItemStreamException(ex.getMessage(), ex);
 				}
 			}
 			else
-				outputStream = new ZipOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);
+				throw new NotImplementedException("Not implemented");
 		}
 	}
 
@@ -105,6 +139,7 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 		}
 		finally 
 		{
+			zipCreator = null;
 			outputStream = null;
 			files = null;
 		}

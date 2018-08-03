@@ -1,15 +1,18 @@
 package org.logscanner.cache;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * @author Victor Kadachigov
+ */
 public class Cache 
 {
 	@JsonIgnore
 	private boolean changed;
-	private Set<CacheFileInfo> files = new HashSet<>();
+	private Set<CacheFileInfo> files = new TreeSet<>();
 
 	public Set<CacheFileInfo> getFiles() 
 	{
@@ -29,5 +32,9 @@ public class Cache
 	public boolean isChanged()
 	{
 		return changed;
+	}
+	public void changed()
+	{
+		changed = true;
 	}
 }

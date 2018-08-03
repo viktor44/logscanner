@@ -24,6 +24,8 @@ import org.logscanner.data.FilterParams;
 import org.logscanner.data.Location;
 import org.logscanner.data.LogEvent;
 import org.logscanner.data.LogPattern;
+import org.logscanner.logger.Logged;
+import org.logscanner.logger.Logged.Level;
 import org.logscanner.service.FileServiceSelector;
 import org.logscanner.service.FileSystemService;
 import org.logscanner.service.JobResultModel;
@@ -58,6 +60,7 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 	private Date dateTo;
 
 	@Override
+	@Logged(level = Level.DEBUG)
 	public DirInfo process(Location location) throws Exception 
 	{
 		DirInfo result = null;

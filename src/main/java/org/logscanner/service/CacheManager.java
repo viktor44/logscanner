@@ -27,6 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+/**
+ * @author Victor Kadachigov
+ */
 @Service
 public class CacheManager 
 {
@@ -50,39 +53,73 @@ public class CacheManager
 		});
 	}
 	
-	public BasicFileAttributes readAttributes(String locationCode, String path) throws IOException
+	public CacheFileInfo getFileInfo(String locationCode, String path)
 	{
-		Optional<CacheFileInfo> fileInfo = findFileInfo(locationCode, path);
-		return fileInfo.isPresent() ? new BasicFileAttributesImpl(fileInfo.get()) : null;
+		Cache cache = findCache(locationCode);
+		return getFileInfo(cache, locationCode, path);
 	}
 
-	public void updateAttributes(String locationCode, String path, BasicFileAttributes attr) throws IOException
+	private CacheFileInfo getFileInfo(Cache cache, String locationCode, String path)
 	{
-		Optional<CacheFileInfo> opt = findFileInfo(locationCode, path);
-		CacheFileInfo fileInfo = opt.isPresent() ? opt.get() : new CacheFileInfo(path);
+		Optional<CacheFileInfo> fileInfo = Optional.empty();  
+		if (cache != null)
+			fileInfo = cache.getFiles().stream()
+							.filter(fi -> StringUtils.equals(fi.getPath(), path))
+							.findAny();
+		return fileInfo.isPresent() ? fileInfo.get() : null;
+	}
+
+	public void updateFromAttributes(String locationCode, String path, BasicFileAttributes attr)
+	{
+		Cache cache = findCache(locationCode);
+		CacheFileInfo fileInfo = getFileInfo(cache, locationCode, path);
+		if (fileInfo == null) 
+		{ 
+			fileInfo = new CacheFileInfo(path);
+			cache.addFile(fileInfo);
+		}
 		FileTime creationTime = attr.creationTime();
 		FileTime lastModifiedTime = attr.lastModifiedTime();
 		boolean wrongCreationTime = creationTime == null || (lastModifiedTime != null && creationTime.compareTo(lastModifiedTime) == 0);
 		if (!wrongCreationTime)
+		{
 			fileInfo.setCreated(new Date(creationTime.toMillis()));
+			cache.changed();
+		}
 		if (lastModifiedTime != null)
+		{
 			fileInfo.setLastModified(new Date(lastModifiedTime.toMillis()));
+			cache.changed();
+		}
 		if (attr.size() >= 0)
+		{
 			fileInfo.setSize(attr.size());
-
-		Cache cache = findCache(locationCode);
-		cache.addFile(fileInfo);
+			cache.changed();
+		}
+		
 	}
 	
-	private Optional<CacheFileInfo> findFileInfo(String locationCode, String path) 
+	public void updateFromContent(String locationCode, String path, Date contentStart, Date contentEnd)
 	{
-		Optional<CacheFileInfo> result = Optional.empty();  
 		Cache cache = findCache(locationCode);
-		if (cache != null)
-			result = cache.getFiles().stream()
-						.filter(fi -> StringUtils.equals(fi.getPath(), path))
-						.findAny();
-		return result;
+		CacheFileInfo fileInfo = getFileInfo(locationCode, path);
+		if (fileInfo == null) 
+		{
+			fileInfo = new CacheFileInfo(path);
+			cache.addFile(fileInfo);
+		}
+		if (contentStart != null)
+		{
+			fileInfo.setContentStart(contentStart);
+			if (fileInfo.getCreated() == null)
+				fileInfo.setCreated(contentStart);
+			cache.changed();
+		}
+		if (contentEnd != null)
+		{
+			fileInfo.setContentEnd(contentEnd);
+			cache.changed();
+		}
 	}
 	
 	private Cache findCache(String locationCode)
@@ -144,69 +181,12 @@ public class CacheManager
 		}
 		catch (IOException ex)
 		{
-			throw new RuntimeException(ex);
+			log.error("", ex);
 		}
 	}
 	
 	private Path getPathForLocation(String locationCode)
 	{
-		return Paths.get(props.getDataDir(), "files", locationCode, "dir.json");
-	}
-	
-	public static class BasicFileAttributesImpl implements BasicFileAttributes
-	{
-		private final FileTime lastModifiedTime;
-		private final FileTime creationTime;
-		private final long size;
-		
-		public BasicFileAttributesImpl(CacheFileInfo fileInfo) {
-			lastModifiedTime = fileInfo.getLastModifiedAsFileTime();
-			creationTime = fileInfo.getCreatedAsFileTime();
-			size = fileInfo.getSize();
-		}
-		public BasicFileAttributesImpl(FileTime lastModifiedTime, FileTime creationTime, long size) {
-			this.lastModifiedTime = lastModifiedTime;
-			this.creationTime = creationTime;
-			this.size = size;
-		}
-		
-		@Override
-		public FileTime lastModifiedTime() {
-			return lastModifiedTime;
-		}
-		@Override
-		public FileTime creationTime() {
-			return creationTime;
-		}
-		@Override
-		public long size() {
-			return size;
-		}
-		@Override
-		public boolean isRegularFile() {
-			return true;
-		}
-		@Override
-		public boolean isDirectory() {
-			return false;
-		}
-
-		@Override
-		public FileTime lastAccessTime() {
-			throw new UnsupportedOperationException("Not implemented");
-		}
-
-		@Override
-		public boolean isSymbolicLink() {
-			throw new UnsupportedOperationException("Not implemented");
-		}
-		@Override
-		public boolean isOther() {
-			throw new UnsupportedOperationException("Not implemented");
-		}
-		@Override
-		public Object fileKey() {
-			throw new UnsupportedOperationException("Not implemented");
-		}
+		return Paths.get(props.getDataDir(), "data", "files", locationCode, "dir.json");
 	}
 }

@@ -5,7 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.zip.ZipEntry;
@@ -13,6 +23,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.lang3.NotImplementedException;
 import org.logscanner.AppConstants;
 import org.logscanner.data.FileData;
 import org.logscanner.data.LogEvent;
@@ -29,20 +40,20 @@ import org.springframework.batch.item.support.AbstractItemStreamItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * using ZipOutputStream
+ * using ZipFileSystem. ZipFileSystem has in-memory implementation!!! To heavy
  * @author Victor Kadachigov
  */
-public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
+public class PackFilesWriter2 extends AbstractItemStreamItemWriter<FileData>
 {
-	private static Logger log = LoggerFactory.getLogger(PackFilesWriter.class);
+	private static Logger log = LoggerFactory.getLogger(PackFilesWriter2.class);
 
 	private StepExecution stepExecution;
-	private ZipOutputStream outputStream;
+	private FileSystem zipFile;
 	private Set<String> files;
 
 	@Override
 	@Logged(level = Level.DEBUG)
-	public synchronized void write(List<? extends FileData> items) throws Exception 
+	public void write(List<? extends FileData> items) throws Exception 
 	{
 		for (FileData fileData : items)
 		{
@@ -54,13 +65,16 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 			}
 			files.add(zipPath);
 			log.info("Сохраняю {} в {}", fileData.getFilePath(), zipPath); //, Runtime.getRuntime().freeMemory());
-			ZipEntry entry = new ZipEntry(zipPath);
-			outputStream.putNextEntry(entry);
+
 			try (InputStream inputStream = fileData.getContentReader().getInputStream())
 			{
-				IOUtils.copy(inputStream, outputStream);
+				Path p = zipFile.getPath(zipPath);
+				Files.createDirectories(p.getParent());
+				try (OutputStream outputStream = Files.newOutputStream(p, StandardOpenOption.CREATE))
+				{
+					IOUtils.copy(inputStream, outputStream);
+				}
 			}
-			outputStream.closeEntry();
 		}
 	}
 	
@@ -77,17 +91,24 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 
 				log.info("Файл с результатами {}", file.getAbsolutePath());
 				
-				try 
+		        try
 				{
-					outputStream = new ZipOutputStream(new FileOutputStream(file));
-				} 
-				catch (FileNotFoundException ex) 
+		        	if (file.exists())				
+		        		file.delete();
+
+					Map<String, String> env = new HashMap<>();
+					env.put("create", "true");
+					env.put("useTempFile", "true"); // seems that it doesn't work
+					URI zipURI = new URI("jar:file", null, file.toURI().getPath(), null);
+					zipFile = FileSystems.newFileSystem(zipURI, env);
+				}
+				catch (IOException | URISyntaxException ex)
 				{
 					throw new ItemStreamException(ex.getMessage(), ex);
 				}
 			}
 			else
-				outputStream = new ZipOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);
+				throw new NotImplementedException("Not Implemented");
 		}
 	}
 
@@ -97,7 +118,7 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 		try 
 		{
 			if (isInitialized())
-				outputStream.close();
+				zipFile.close();
 		} 
 		catch (IOException ex) 
 		{
@@ -105,14 +126,14 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 		}
 		finally 
 		{
-			outputStream = null;
+			zipFile = null;
 			files = null;
 		}
 	}
 
     private boolean isInitialized() 
     {
-		return outputStream != null;
+		return zipFile != null;
 	}
 
 	@BeforeStep

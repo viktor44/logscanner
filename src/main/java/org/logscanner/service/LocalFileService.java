@@ -7,9 +7,12 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -76,7 +79,10 @@ public class LocalFileService extends BaseFileService
 		List<FileInfo> list = new ArrayList<>();
 		String includedFiles[] = dirScanner.getIncludedFiles();
 		Arrays.stream(includedFiles)
-				.forEach(path -> list.add(new LocalFileInfo(location.getCode(), Paths.get(location.getPath(), path))));
+				.forEach(path -> {
+						LocalFileInfo fileInfo = new LocalFileInfo(location.getCode(), Paths.get(location.getPath(), path));
+						list.add(fillAttributes(fileInfo));
+				});
 		return list;
 	}
 }

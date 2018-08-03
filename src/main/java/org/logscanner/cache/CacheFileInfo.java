@@ -2,16 +2,22 @@ package org.logscanner.cache;
 
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
+/**
+ * @author Victor Kadachigov
+ */
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, isGetterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
-public class CacheFileInfo 
+public class CacheFileInfo implements Comparable<CacheFileInfo>
 {
 	private String path;
 	private Date lastModified;
 	private Date created;
+	private Date contentStart;
+	private Date contentEnd;
 	private long size;
 
 	CacheFileInfo()
@@ -20,7 +26,7 @@ public class CacheFileInfo
 
 	public CacheFileInfo(String path)
 	{
-		this.path = path;
+		this.path = Objects.requireNonNull(path);
 	}
 
 	public String getPath() {
@@ -29,7 +35,6 @@ public class CacheFileInfo
 	void setPath(String path) {
 		this.path = path;
 	}
-	
 	public Date getLastModified() {
 		return lastModified;
 	}
@@ -77,6 +82,29 @@ public class CacheFileInfo
 		} else if (!path.equals(other.path))
 			return false;
 		return true;
+	}
+
+	public Date getContentStart()
+	{
+		return contentStart;
+	}
+	public void setContentStart(Date contentStart)
+	{
+		this.contentStart = contentStart;
+	}
+	public Date getContentEnd()
+	{
+		return contentEnd;
+	}
+	public void setContentEnd(Date contentEnd)
+	{
+		this.contentEnd = contentEnd;
+	}
+
+	@Override
+	public int compareTo(CacheFileInfo o)
+	{
+		return path.compareTo(o.getPath());
 	}
 
 }
