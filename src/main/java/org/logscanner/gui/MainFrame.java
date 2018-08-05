@@ -2,7 +2,16 @@ package org.logscanner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Desktop;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
@@ -16,6 +25,9 @@ import javax.swing.border.BevelBorder;
 
 import org.jdesktop.swingx.JXStatusBar;
 import org.logscanner.AppConstants;
+import org.logscanner.common.gui.MessageBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +38,7 @@ import org.springframework.stereotype.Component;
 public class MainFrame extends JFrame
 {
 	private static final long serialVersionUID = 1L;
+	private static final Logger log = LoggerFactory.getLogger(MainFrame.class);
 
 	@Autowired
 	private SearchPanel searchPanel;
@@ -54,6 +67,8 @@ public class MainFrame extends JFrame
 		setContentPane(createContentPane());
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new ShowLogKeyEventDispatcher());
 	}
 
 	private Container createContentPane() 
@@ -94,5 +109,29 @@ public class MainFrame extends JFrame
 		helpMenu.add(aboutAction);
 
 		return menuBar;
+	}
+	
+	private class ShowLogKeyEventDispatcher implements KeyEventDispatcher
+	{
+		@Override
+		public boolean dispatchKeyEvent(KeyEvent event) 
+		{
+			// Ctrl + Alt + L
+			if (event.getID() == KeyEvent.KEY_RELEASED && event.getKeyCode() == 76 && event.isControlDown() && event.isAltDown())
+			{
+				try 
+				{
+					Path logPath = Paths.get(System.getProperty("java.io.tmpdir"), "logscanner.log");
+					if (Files.exists(logPath))
+						Desktop.getDesktop().open(logPath.toFile());
+				}
+				catch (Exception ex) 
+				{
+					log.error("", ex);
+					MessageBox.showExceptionDialog(null, "Ошибка при открытии лог-файла", ex);
+				}
+			}
+			return false;
+		}
 	}
 }
