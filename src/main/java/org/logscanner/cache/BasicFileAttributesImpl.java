@@ -9,27 +9,20 @@ import java.nio.file.attribute.FileTime;
 public class BasicFileAttributesImpl implements BasicFileAttributes
 {
 	private final FileTime lastModifiedTime;
-	private final FileTime creationTime;
 	private final long size;
 	
 	public BasicFileAttributesImpl(CacheFileInfo fileInfo) {
 		lastModifiedTime = fileInfo.getLastModifiedAsFileTime();
-		creationTime = fileInfo.getCreatedAsFileTime();
 		size = fileInfo.getSize();
 	}
 	public BasicFileAttributesImpl(FileTime lastModifiedTime, FileTime creationTime, long size) {
 		this.lastModifiedTime = lastModifiedTime;
-		this.creationTime = creationTime;
 		this.size = size;
 	}
 	
 	@Override
 	public FileTime lastModifiedTime() {
 		return lastModifiedTime;
-	}
-	@Override
-	public FileTime creationTime() {
-		return creationTime;
 	}
 	@Override
 	public long size() {
@@ -45,10 +38,13 @@ public class BasicFileAttributesImpl implements BasicFileAttributes
 	}
 
 	@Override
+	public FileTime creationTime() {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+	@Override
 	public FileTime lastAccessTime() {
 		throw new UnsupportedOperationException("Not implemented");
 	}
-
 	@Override
 	public boolean isSymbolicLink() {
 		throw new UnsupportedOperationException("Not implemented");

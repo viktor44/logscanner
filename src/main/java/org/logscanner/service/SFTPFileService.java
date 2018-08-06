@@ -1,28 +1,15 @@
 package org.logscanner.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.tools.ant.types.TimeComparison;
-import org.apache.tools.ant.types.selectors.DateSelector;
-import org.apache.tools.ant.types.selectors.FileSelector;
 import org.logscanner.data.FileInfo;
-import org.logscanner.data.FilterParams;
-import org.logscanner.data.LocalFileInfo;
 import org.logscanner.data.Location;
-import org.logscanner.data.SFTPFileInfo;
 import org.logscanner.data.LocationType;
+import org.logscanner.data.SFTPFileInfo;
 import org.logscanner.util.fs.LocalDirectoryScanner;
-import org.logscanner.util.fs.ModifiedInPeriodSelector;
 import org.logscanner.util.fs.SFTPDirectoryScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

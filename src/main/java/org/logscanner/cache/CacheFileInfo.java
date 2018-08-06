@@ -15,7 +15,6 @@ public class CacheFileInfo implements Comparable<CacheFileInfo>
 {
 	private String path;
 	private Date lastModified;
-	private Date created;
 	private Date contentStart;
 	private Date contentEnd;
 	private long size;
@@ -43,15 +42,6 @@ public class CacheFileInfo implements Comparable<CacheFileInfo>
 	}
 	public FileTime getLastModifiedAsFileTime() {
 		return lastModified != null ? FileTime.fromMillis(lastModified.getTime()) : null;
-	}
-	public Date getCreated() {
-		return created;
-	}
-	public FileTime getCreatedAsFileTime() {
-		return created != null ? FileTime.fromMillis(created.getTime()) : null;
-	}
-	public void setCreated(Date creationTime) {
-		this.created = creationTime;
 	}
 	public long getSize() {
 		return size;

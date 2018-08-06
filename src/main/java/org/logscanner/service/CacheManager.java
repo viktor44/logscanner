@@ -78,14 +78,7 @@ public class CacheManager
 			fileInfo = new CacheFileInfo(path);
 			cache.addFile(fileInfo);
 		}
-		FileTime creationTime = attr.creationTime();
 		FileTime lastModifiedTime = attr.lastModifiedTime();
-		boolean wrongCreationTime = creationTime == null || (lastModifiedTime != null && creationTime.compareTo(lastModifiedTime) == 0);
-		if (!wrongCreationTime)
-		{
-			fileInfo.setCreated(new Date(creationTime.toMillis()));
-			cache.changed();
-		}
 		if (lastModifiedTime != null)
 		{
 			fileInfo.setLastModified(new Date(lastModifiedTime.toMillis()));
@@ -96,7 +89,6 @@ public class CacheManager
 			fileInfo.setSize(attr.size());
 			cache.changed();
 		}
-		
 	}
 	
 	public void updateFromContent(String locationCode, String path, Date contentStart, Date contentEnd)
@@ -111,8 +103,6 @@ public class CacheManager
 		if (contentStart != null)
 		{
 			fileInfo.setContentStart(contentStart);
-			if (fileInfo.getCreated() == null)
-				fileInfo.setCreated(contentStart);
 			cache.changed();
 		}
 		if (contentEnd != null)

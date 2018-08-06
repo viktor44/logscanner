@@ -1,32 +1,17 @@
 package org.logscanner.service;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.types.TimeComparison;
-import org.apache.tools.ant.types.selectors.DateSelector;
-import org.apache.tools.ant.types.selectors.FileSelector;
 import org.logscanner.data.FileInfo;
-import org.logscanner.data.FilterParams;
 import org.logscanner.data.LocalFileInfo;
 import org.logscanner.data.Location;
 import org.logscanner.data.LocationType;
 import org.logscanner.util.fs.LocalDirectoryScanner;
-import org.logscanner.util.fs.ModifiedInPeriodSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

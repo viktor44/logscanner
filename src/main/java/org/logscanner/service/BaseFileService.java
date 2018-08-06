@@ -1,6 +1,6 @@
 package org.logscanner.service;
 
-import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.tools.ant.types.selectors.BaseSelector;
 import org.apache.tools.ant.types.selectors.FileSelector;
-import org.logscanner.cache.BasicFileAttributesImpl;
 import org.logscanner.cache.CacheFileInfo;
 import org.logscanner.data.ByteContentReader;
 import org.logscanner.data.ContentReader;
@@ -25,7 +25,6 @@ import org.logscanner.data.UriContentReader;
 import org.logscanner.exception.BusinessException;
 import org.logscanner.exception.FileTooBigException;
 import org.logscanner.util.fs.LocalDirectoryScanner;
-import org.logscanner.util.fs.ModifiedInPeriodSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +88,7 @@ public abstract class BaseFileService implements FileSystemService
 
 		List<FileSelector> selectors = new ArrayList<>();
 		if (filterParams.getDateFrom() != null || filterParams.getDateTo() != null)
-			selectors.add(new ModifiedInPeriodSelector0(location.getCode(), filterParams.getDateFrom(), filterParams.getDateTo()));
+			selectors.add(new ModifiedInPeriodSelector(location.getCode(), filterParams.getDateFrom(), filterParams.getDateTo()));
 
 		if (!selectors.isEmpty())
 			dirScanner.setSelectors(selectors.toArray(new FileSelector[selectors.size()]));
@@ -98,29 +97,52 @@ public abstract class BaseFileService implements FileSystemService
 		return list;
 	}
 	
-	private class ModifiedInPeriodSelector0 extends ModifiedInPeriodSelector
+	public class ModifiedInPeriodSelector extends BaseSelector
 	{
 		private final String locationCode;
+		private final Date from;
+		private final Date to;
 		
-		public ModifiedInPeriodSelector0(String locationCode, Date from, Date to) 
+		public ModifiedInPeriodSelector(String locationCode, Date from, Date to)
 		{
-			super(from, to);
 			this.locationCode = locationCode;
+			this.from = from;
+			this.to = to;
 		}
-		
+
 		@Override
-		protected BasicFileAttributes readAttributes(Path path) throws IOException 
+		public boolean isSelected(File basedir, String filename, File file)
 		{
-			BasicFileAttributes result = null; 
+			Date contentStart = null;
+			Date lastModifiedTime = null;
+			Path path = file.toPath();
 			CacheFileInfo cacheFileInfo = cacheManager.getFileInfo(locationCode, path.toString());
 			if (cacheFileInfo == null)
 			{
-				result = super.readAttributes(path);
-				cacheManager.updateFromAttributes(locationCode, path.toString(), result);
+				try
+				{
+					BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+					cacheManager.updateFromAttributes(locationCode, path.toString(), attr);
+					lastModifiedTime = new Date(attr.lastModifiedTime().toMillis());
+				}
+				catch (IOException ex)
+				{
+					log.error(ex.getMessage());
+					return false;
+				}
 			}
 			else
-				result = new BasicFileAttributesImpl(cacheFileInfo); 
-				
+			{
+				lastModifiedTime = cacheFileInfo.getLastModified();
+				contentStart = cacheFileInfo.getContentStart();
+			}
+			
+			boolean result = lastModifiedTime.compareTo(from) >= 0 
+									&& (contentStart == null || contentStart.compareTo(to) <= 0);
+			
+//			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"); 
+//			log.info("isSelected({}) \nfrom: {}, \nto: {}, \ncreated: {}, \nmodified: {}, \nresult: {}", filename, df.format(from), df.format(to), df.format(creationTime.toMillis()), df.format(lastModifiedTime.toMillis()), result);
+			
 			return result;
 		}
 	}
