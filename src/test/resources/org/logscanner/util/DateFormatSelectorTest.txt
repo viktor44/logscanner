@@ -1,0 +1,4 @@
+2017-04-21 23:06:37,019 MID:38  [MessageListenerThreadPool : 11] INFO  [cod99:logMethodEntry:79] -  <== getLastCodOperationDay : Dpcoperday[day=2017-04-21,lockflag=0,mutateflag=0,state=20,dpcuser=auto,id=38-24436386-1]; Time 0,0 ms. (cnt 4393333; avg 4,3)
+2018-08-09 02:01:51 [INFO ] [com.sbt.core.transport.coordination.zmq.impl.BrokerCoordinationServiceImpl] [Curator-[depositpf-calc]-transport-broker-coordination-service-cache-0] - Zmq local broker registry has been updated. Updated instance info: 
+2018-08-09 14:56:53.052 [ERROR] [c.s.a.m.f.searchers.NxmlFormSearcher] [T:] - Validation entityInfoForm.nxml:[89 , 27] error: cvc-complex-type.2.4.b: The content of element 'columns' is not complete. One of '{column}' is expected.
+

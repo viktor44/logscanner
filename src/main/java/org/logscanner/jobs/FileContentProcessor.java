@@ -44,6 +44,7 @@ import org.logscanner.service.JobResultModel;
 import org.logscanner.service.LocalFileService;
 import org.logscanner.service.LogPatternDao;
 import org.logscanner.service.FileSystemService.ReaderType;
+import org.logscanner.util.DateFormatSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepExecution;
@@ -75,6 +76,8 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
 	private String datePattern;
 	private Date dateFrom;
 	private Date dateTo;
+	
+	private FastDateFormat dateFormat = null;
 	
 	@Override
 	@Logged(level = Level.DEBUG)
@@ -188,9 +191,6 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
     	boolean result = false;
     	String line;
     	List<LogEvent> list = new ArrayList<>();
-    	FastDateFormat dateFormat = StringUtils.isNotEmpty(datePattern) 
-    								? FastDateFormat.getInstance(datePattern)
-    								: null;
     	boolean dateInRangeWholeFile = false;
     	Date contentStart = null;
     	Date contentEnd = null;
@@ -198,6 +198,22 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
     	boolean lastParsedDateInRange = false;
     	while ((line = reader.readLine()) != null)
     	{
+    		if (dateFormat == null)
+    		{
+    			synchronized (this)
+				{
+    				if (dateFormat == null)
+    				{
+            			if (StringUtils.isEmpty(datePattern))
+            				datePattern = DateFormatSelector.selectFormat(line);
+            			if (StringUtils.isNotEmpty(datePattern)) 
+            			{
+            				dateFormat = FastDateFormat.getInstance(datePattern);
+            				log.info("Using date format '{}'", datePattern);
+            			}
+    				}
+				}
+    		}
     		Date dt = tryToParseDate(line, dateFormat);
     		
     		boolean dateIsEmpty = dt == null; 
@@ -239,6 +255,8 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
     		resultModel.addAll(list);
     	if (contentStart != null || contentEnd != null) 
     		cacheManager.updateFromContent(fileData.getLocationCode(), fileData.getFilePath(), contentStart, contentEnd);
+    	if (lastParsedDate == null)
+    		log.error("Невозможно определить дату в файле {} {}", fileData.getLocationCode(), fileData.getFilePath());
     	result |= lastParsedDate == null; // we can't check date at all
     	return result;
     }
@@ -305,5 +323,7 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
     		encoding = "UTF-8";
     	dateFrom = stepExecution.getJobParameters().getDate(AppConstants.JOB_PARAM_FROM);
     	dateTo = stepExecution.getJobParameters().getDate(AppConstants.JOB_PARAM_TO);
+
+    	dateFormat = null;
     }
 }
