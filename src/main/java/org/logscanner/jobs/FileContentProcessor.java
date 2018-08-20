@@ -233,7 +233,7 @@ public class FileContentProcessor implements ItemProcessor<FileInfo, FileData>
     		
     		if (dateIsEmpty || dateInRange)
     		{
-    			if (searchString != null)
+    			if (StringUtils.isNotEmpty(searchString))
     			{
     	    		if (StringUtils.contains(line, searchString)
     	    				&& (dateInRange || lastParsedDate == null || lastParsedDateInRange))

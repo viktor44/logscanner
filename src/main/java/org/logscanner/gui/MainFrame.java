@@ -3,14 +3,18 @@ package org.logscanner.gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Desktop;
+import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -54,6 +58,15 @@ public class MainFrame extends JFrame
 	public MainFrame()
 	{
 		super(AppConstants.APP_NAME);
+		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		List<Image> icons = new ArrayList<Image>();
+		icons.add(toolkit.createImage(MainFrame.class.getResource("/images/app1/log_16.png")));
+		icons.add(toolkit.createImage(MainFrame.class.getResource("/images/app1/log_24.png")));
+		icons.add(toolkit.createImage(MainFrame.class.getResource("/images/app1/log_32.png")));
+		icons.add(toolkit.createImage(MainFrame.class.getResource("/images/app1/log_64.png")));
+		icons.add(toolkit.createImage(MainFrame.class.getResource("/images/app1/log_128.png")));
+		setIconImages(icons);
 	}
 	
 	@PostConstruct

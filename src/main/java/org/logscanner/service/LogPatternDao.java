@@ -3,6 +3,7 @@ package org.logscanner.service;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.privatejgoodies.common.base.Objects;
 
 /**
  * @author Victor Kadachigov

@@ -14,7 +14,7 @@
 	<groupId>org.logscanner</groupId>
 	<artifactId>logscanner</artifactId>
 	<name>LogScanner</name>
-	<version>2.4</version>
+	<version>3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<description></description>
@@ -29,15 +29,6 @@
 
 	<build>
 		<plugins>
-<!--  
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<layout>ZIP</layout>
-				</configuration>
-			</plugin>
--->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -50,6 +41,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>
 				</executions>				
@@ -61,6 +53,18 @@
 					<outputDirectory>${project.build.directory}/lib</outputDirectory>
 				</configuration>
 			</plugin>			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>parse-version</id>
+						<goals>
+							<goal>parse-version</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -99,8 +103,6 @@
 									<jre>
 										<path>./jre</path>
 										<minVersion>1.8.0</minVersion>
-<!-- 										<maxHeapSize>3072</maxHeapSize> -->
-<!-- 										<maxHeapPercent>75</maxHeapPercent> -->
 										<opts>
 											<opt>-Xmx1g</opt>
 											<opt>-XX:MinHeapFreeRatio=15</opt>
@@ -109,15 +111,16 @@
 									</jre>
 									<versionInfo>
 										<fileDescription>${project.name}</fileDescription>
-										<fileVersion>${project.version}.0.0</fileVersion>
-										<txtFileVersion>${project.version}.0.0</txtFileVersion>
+										<fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.0</fileVersion>
+										<txtFileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.0</txtFileVersion>
 										<productName>${project.name}</productName>
-										<productVersion>${project.version}.0.0</productVersion>
-										<txtProductVersion>${project.version}.0.0</txtProductVersion>
+										<productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.0</productVersion>
+										<txtProductVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.0</txtProductVersion>
 										<copyright>Victor K</copyright>
 										<internalName>${project.name}</internalName>
 										<originalFilename>LogScanner.exe</originalFilename>
 									</versionInfo>
+									<icon>etc/app1.ico</icon>
 								</configuration>
 							</execution>
 						</executions>
@@ -192,11 +195,6 @@
 			<version>1.17</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.lgooddatepicker</groupId>
-			<artifactId>LGoodDatePicker</artifactId>
-			<version>10.3.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.swinglabs.swingx</groupId>
 			<artifactId>swingx-core</artifactId>
 			<version>1.6.5-1</version>
@@ -236,24 +234,6 @@
 			<artifactId>sftp-fs</artifactId>
 			<version>1.2.1</version>
 		</dependency>
-<!--  
-			<scope>provided</scope>
-		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant-commons-net</artifactId>
-			<version>1.10.3</version>
-  		</dependency>
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.54</version>
-  		</dependency>
-		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant-jsch</artifactId>
-			<version>1.10.3</version>
-		</dependency>  		
--->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

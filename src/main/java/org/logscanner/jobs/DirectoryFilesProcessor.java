@@ -1,35 +1,22 @@
 package org.logscanner.jobs;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.logscanner.AppConstants;
 import org.logscanner.data.DirInfo;
 import org.logscanner.data.FileInfo;
 import org.logscanner.data.FilterParams;
 import org.logscanner.data.Location;
-import org.logscanner.data.LogEvent;
 import org.logscanner.data.LogPattern;
 import org.logscanner.logger.Logged;
 import org.logscanner.logger.Logged.Level;
 import org.logscanner.service.FileServiceSelector;
 import org.logscanner.service.FileSystemService;
 import org.logscanner.service.JobResultModel;
-import org.logscanner.service.LocalFileService;
 import org.logscanner.service.LogPatternDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +24,6 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.privatejgoodies.common.base.Objects;
 
 /**
  * @author Victor Kadachigov

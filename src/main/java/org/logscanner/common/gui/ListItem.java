@@ -1,6 +1,6 @@
 package org.logscanner.common.gui;
 
-import com.privatejgoodies.common.base.Objects;
+import java.util.Objects;
 
 /**
  * @author Victor Kadachigov
