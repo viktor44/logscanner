@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.logscanner.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class StatisticsPrinter
 
 	public StatisticsPrinter addTotalGroup(String groupName, String... monitorNames)
 	{
-		throw new NotImplementedException("Not yet");
+		throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 		//return this;
 	}
 	

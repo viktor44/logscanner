@@ -3,6 +3,9 @@ package org.logscanner.cache;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.logscanner.Resources;
+
 /**
  * @author Victor Kadachigov
  */
@@ -39,22 +42,22 @@ public class BasicFileAttributesImpl implements BasicFileAttributes
 
 	@Override
 	public FileTime creationTime() {
-		throw new UnsupportedOperationException("Not implemented");
+		throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 	}
 	@Override
 	public FileTime lastAccessTime() {
-		throw new UnsupportedOperationException("Not implemented");
+		throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 	}
 	@Override
 	public boolean isSymbolicLink() {
-		throw new UnsupportedOperationException("Not implemented");
+		throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 	}
 	@Override
 	public boolean isOther() {
-		throw new UnsupportedOperationException("Not implemented");
+		throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 	}
 	@Override
 	public Object fileKey() {
-		throw new UnsupportedOperationException("Not implemented");
+		throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 	}
 }

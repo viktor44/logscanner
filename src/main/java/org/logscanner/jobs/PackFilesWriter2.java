@@ -25,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.NotImplementedException;
 import org.logscanner.AppConstants;
+import org.logscanner.Resources;
 import org.logscanner.data.FileData;
 import org.logscanner.data.LogEvent;
 import org.logscanner.logger.Logged;
@@ -108,7 +109,7 @@ public class PackFilesWriter2 extends AbstractItemStreamItemWriter<FileData>
 				}
 			}
 			else
-				throw new NotImplementedException("Not Implemented");
+				throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 		}
 	}
 

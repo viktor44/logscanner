@@ -48,7 +48,6 @@ public abstract class BaseAction extends AbstractAction
 			TaskDialogs.error(null, error.getMessage(), null);
 		else
 			TaskDialogs.showException(error);
-//		MessageBox.showErrorDialog(App.getMainFrame(), error.getLocalizedMessage());
 	}
 
 	protected abstract void actionPerformed0(ActionEvent event) throws Exception;

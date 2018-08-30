@@ -6,6 +6,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.logscanner.Resources;
 import org.logscanner.exception.BusinessException;
 import org.oxbow.swingbits.dialog.task.TaskDialogs;
 
@@ -26,7 +27,7 @@ public class MessageBox
 		JOptionPane.showMessageDialog(
 				parentComponent, 
 				message, 
-				"Ошибка", 
+				Resources.getStr("dialog.title.error"), 
 				JOptionPane.ERROR_MESSAGE
 		);
 	}
@@ -36,7 +37,7 @@ public class MessageBox
 		JOptionPane.showMessageDialog(
 				parentComponent, 
 				message, 
-				"Внимание", 
+				Resources.getStr("dialog.title.warning"), 
 				JOptionPane.WARNING_MESSAGE
 		);
 	}
@@ -46,7 +47,7 @@ public class MessageBox
 		JOptionPane.showMessageDialog(
 				parentComponent, 
 				message, 
-				"Информация", 
+				Resources.getStr("dialog.title.info"), 
 				JOptionPane.INFORMATION_MESSAGE
 		);
 	}
@@ -56,7 +57,7 @@ public class MessageBox
 		int result = JOptionPane.showConfirmDialog(
 								parentComponent, 
 								message, 
-								"Подтверждение", 
+								Resources.getStr("dialog.title.confirm"), 
 								JOptionPane.YES_NO_OPTION
 						);
 		return result == JOptionPane.YES_OPTION;

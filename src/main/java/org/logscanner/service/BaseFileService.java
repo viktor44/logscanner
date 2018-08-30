@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.tools.ant.types.selectors.BaseSelector;
 import org.apache.tools.ant.types.selectors.FileSelector;
+import org.logscanner.Resources;
 import org.logscanner.cache.CacheFileInfo;
 import org.logscanner.data.ByteContentReader;
 import org.logscanner.data.ContentReader;
@@ -60,7 +61,7 @@ public abstract class BaseFileService implements FileSystemService
 				result = new UriContentReader(path.toUri(), size);
 				break;
 			case AUTO:
-				throw new NotImplementedException("Not implemented");
+				throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 		}
 		
 		return result;

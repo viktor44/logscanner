@@ -44,6 +44,14 @@ public class Resources extends ListResourceBundle
 	{
 		return new Object[][] 
 				{
+						{"error.not_implemented",	"Not implemented yet"},
+						{"error.log_open_error",	"Ошибка при открытии лог-файла"},
+						{"action.file",				"Файл"},
+						{"action.help",				"Справка"},
+						{"dialog.title.error",		"Error"},		// Ошибка
+						{"dialog.title.warning",	"Warning"},		// Внимание
+						{"dialog.title.info",		"Information"},	// Информация
+						{"dialog.title.confirm",	"Confirm"},		// Подтверждение
 //Images					
 						{"image.locations.16", 				loadImage("image.locations.16")},
 						{"image.exit.16",					loadImage("image.exit.16")},

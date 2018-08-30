@@ -29,6 +29,7 @@ import javax.swing.border.BevelBorder;
 
 import org.jdesktop.swingx.JXStatusBar;
 import org.logscanner.AppConstants;
+import org.logscanner.Resources;
 import org.logscanner.common.gui.MessageBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +106,7 @@ public class MainFrame extends JFrame
 
 	private JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
-		JMenu fileMenu = new JMenu("Файл");
+		JMenu fileMenu = new JMenu(Resources.getStr("action.file"));
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		
 		menuBar.add(fileMenu);
@@ -114,7 +115,7 @@ public class MainFrame extends JFrame
 		fileMenu.add(new JSeparator());
 		fileMenu.add(new ExitAction());
 
-		JMenu helpMenu = new JMenu("Справка");
+		JMenu helpMenu = new JMenu(Resources.getStr("action.help"));
 		fileMenu.setMnemonic(KeyEvent.VK_H);
 		
 		menuBar.add(helpMenu);
@@ -141,7 +142,7 @@ public class MainFrame extends JFrame
 				catch (Exception ex) 
 				{
 					log.error("", ex);
-					MessageBox.showExceptionDialog(null, "Ошибка при открытии лог-файла", ex);
+					MessageBox.showExceptionDialog(null, Resources.getStr("error.log_open_error"), ex);
 				}
 			}
 			return false;

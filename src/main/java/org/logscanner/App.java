@@ -79,7 +79,7 @@ public class App
 		
 		if (consoleApp)
 		{
-			throw new NotImplementedException("Not implemented yet");
+			throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 //			SpringApplication app = new SpringApplication(ConsoleConfig.class);
 //			app.run(args);
 		}
