@@ -141,7 +141,6 @@ public class StatisticsPrinter
 		}
 		catch (IOException ex)
 		{
-			//vk: не выпускаем ошибку наружу
 			log.error(ex.getMessage(), ex);
 		}
 	}
@@ -200,7 +199,6 @@ public class StatisticsPrinter
 		//double mvMaxActive;//10
 		
 		MonitorView(Object[] mon){
-			//vk: почему-то иногда вначале вдруг появляется ещё один элемент 
 			mvLabel = (String)mon[mon.length - 16];
 			mvHits = ((Double)mon[mon.length - 15]).longValue();
 			mvAvg = (Double)mon[mon.length - 14];

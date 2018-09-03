@@ -109,7 +109,8 @@ public class FileContentProcessor2 implements ItemProcessor<FileInfo, FileData>
     {
     	boolean result = false;
 
-		log.info("Проверяю {}", fileData.getFilePath());
+		log.info("Checking {} {}", fileData.getLocationCode(), fileData.getFilePath());
+		
 		resultModel.addProcessedFile();
 		
     	if (FilenameUtils.isExtension(fileData.getFilePath(), "zip"))

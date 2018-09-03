@@ -1,8 +1,6 @@
 package org.logscanner.jobs;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,19 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.NotImplementedException;
 import org.logscanner.AppConstants;
 import org.logscanner.Resources;
 import org.logscanner.data.FileData;
-import org.logscanner.data.LogEvent;
 import org.logscanner.logger.Logged;
 import org.logscanner.logger.Logged.Level;
-import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepExecution;
@@ -38,7 +31,6 @@ import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.support.AbstractItemStreamItemWriter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * using ZipFileSystem. ZipFileSystem has in-memory implementation!!! To heavy
@@ -61,11 +53,11 @@ public class PackFilesWriter2 extends AbstractItemStreamItemWriter<FileData>
 			String zipPath = fileData.getZipPath();
 			if (files.contains(zipPath))
 			{
-				log.warn("Файл {} уже в архиве. Пропускаю", zipPath);
+				log.warn("File {} is already in archive. Skipping", zipPath);
 				continue;
 			}
 			files.add(zipPath);
-			log.info("Сохраняю {} в {}", fileData.getFilePath(), zipPath); //, Runtime.getRuntime().freeMemory());
+			log.info("Saving {} to {}", fileData.getFilePath(), zipPath);
 
 			try (InputStream inputStream = fileData.getContentReader().getInputStream())
 			{
@@ -90,7 +82,7 @@ public class PackFilesWriter2 extends AbstractItemStreamItemWriter<FileData>
 				String resultFile = stepExecution.getJobParameters().getString(AppConstants.JOB_PARAM_OUTPUT_ARCHIVE_NAME);
 				File file = new File(resultFile);
 
-				log.info("Файл с результатами {}", file.getAbsolutePath());
+				log.info("Result file {}", file.getAbsolutePath());
 				
 		        try
 				{

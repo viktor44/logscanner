@@ -38,7 +38,6 @@ import net.harawata.appdirs.AppDirsFactory;
  */
 @Component
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, isGetterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
-//@JsonIgnoreProperties(ignoreUnknown=true)
 public class AppProperties 
 {
 	private static final Logger log = LoggerFactory.getLogger(AppProperties.class);

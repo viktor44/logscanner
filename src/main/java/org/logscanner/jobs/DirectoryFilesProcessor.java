@@ -56,7 +56,7 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 		FileSystemService fileSystemService = fileServiceSelector.select(location.getType());
 		List<FileInfo> list = fileSystemService.listFiles(location, filterParams); 
 		
-		log.info("{} {} выбрано {} файлов", location.getCode(), location.getPath(), list.size());
+		log.info("{} {} {} files selected", location.getCode(), location.getPath(), list.size());
 		
 		if (!list.isEmpty())
 		{

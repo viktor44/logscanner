@@ -1,6 +1,5 @@
 package org.logscanner.logger;
 
-import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Calendar;
@@ -69,23 +68,7 @@ public class LogUtils
     }
 	
 	/**
-	 * @param value
-	 * @return позвращает строку в кодировке UTF-8
-	 */
-	public static String asString(byte value[])
-	{
-		try
-		{
-			return (value != null && value.length > 0) ? new String(value, "UTF-8") : null;
-		}
-		catch (UnsupportedEncodingException ex)
-		{
-			return "" + ex.getMessage();
-		}
-	}
-	
-	/**
-	 * Обрезаем очень длинные строки
+	 * Trim long strings
 	 * @param value
 	 * @return
 	 */

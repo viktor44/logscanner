@@ -7,8 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Анотация для вызов интерцептора отвечающего за логирование
- * 
+ * Annotation for logging
  * @author Victor Kadachigov
  */
 @Inherited
@@ -16,30 +15,30 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Logged {
     /**
-     * Имя выводимое в лог. При установке перекрывает остальные настройки
+     * Log name
      */
     String value() default "";
 
     /**
-     * Выводить в лог имя класса вместо названия метода<p>
-     * По-умолчанию <code>false</code>
+     * Log class name instead of method<p>
+     * <code>false</code> by default
      */
     boolean asClass() default false;
 
     /**
-     * Выводить в лог параметры вызова<p>
-     * По-умолчанию <code>true</code>
+     * Log method parameters<p>
+     * <code>true</code> by default
      */
     boolean includeParams() default true;
     
     /**
-     * Префикс, который будет ставится перед строкой лога
+     * Prefix
      */
     String prefix() default "";
     
     /**
-     * Уровень логгирования
-     * По-умолчанию <code>INFO</code>
+     * Log level<p>
+     * <code>INFO</code> by default
      */
     Level level() default Level.INFO;
     

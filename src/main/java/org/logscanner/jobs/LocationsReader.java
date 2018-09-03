@@ -24,9 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * @author Victor Kadachigov
  */
-public class ConfigFileReader implements ItemReader<Location>
+public class LocationsReader implements ItemReader<Location>
 {
-	private static Logger log = LoggerFactory.getLogger(ConfigFileReader.class);
+	private static Logger log = LoggerFactory.getLogger(LocationsReader.class);
 
 	private Object monitor = new Object();
 	
@@ -36,7 +36,7 @@ public class ConfigFileReader implements ItemReader<Location>
 	private StepExecution stepExecution;
 	private List<Location> locations;
 
-	public ConfigFileReader() 
+	public LocationsReader() 
 	{
 	}
 
@@ -72,7 +72,6 @@ public class ConfigFileReader implements ItemReader<Location>
 			if (l != null)
 			{
 				list.add(l);
-//				paths.add((l.getType() != LocationType.LOCAL ? (l.getHost() + "/") : "") + l.getPath());
 				paths.add(l.getPath());
 			}
 			else

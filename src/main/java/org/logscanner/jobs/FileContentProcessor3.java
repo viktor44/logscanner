@@ -2,16 +2,11 @@ package org.logscanner.jobs;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,10 +19,8 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.logscanner.AppConstants;
-import org.logscanner.cache.BasicFileAttributesImpl;
 import org.logscanner.cache.CacheFileInfo;
 import org.logscanner.data.ByteContentReader;
 import org.logscanner.data.FileData;
@@ -42,7 +35,6 @@ import org.logscanner.service.FileServiceSelector;
 import org.logscanner.service.FileSystemService;
 import org.logscanner.service.FileSystemService.ReaderType;
 import org.logscanner.service.JobResultModel;
-import org.logscanner.service.LocalFileService;
 import org.logscanner.service.LogPatternDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +142,7 @@ public class FileContentProcessor3 implements ItemProcessor<FileInfo, FileData>
     {
     	boolean result = false;
 
-		log.info("Проверяю {} {}", fileData.getLocationCode(), fileData.getFilePath());
+		log.info("Checking {} {}", fileData.getLocationCode(), fileData.getFilePath());
 		
     	if (FilenameUtils.isExtension(fileData.getFilePath(), "zip"))
     	{

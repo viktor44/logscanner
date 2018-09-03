@@ -34,8 +34,8 @@ class LoggerAspect {
             writeLog(" ==> " + methodDescription.getName() + methodDescription.getDescription(), methodDescription);
             monitor = MonitorFactory.start(methodDescription.getMonitorName());
         } catch (Exception ex) {
-            // vk: ошибки логирования не пускаем наружу
-            log.error("Ошибка логирования: " + ex.getClass().getName() + ", " + ex.getMessage());
+            // vk: do not show logging error
+            log.error("Logging error: " + ex.getClass().getName() + ", " + ex.getMessage());
         }
         Object result = null;
         Throwable exception = null;
@@ -50,7 +50,7 @@ class LoggerAspect {
                     monitor.stop();
                 StringBuilder msg = (new StringBuilder()).append(" <== ").append(methodDescription.getName());
                 if (exception != null) {
-                    msg.append(" ошибка. (").append(exception.getMessage()).append(")");
+                    msg.append(" error. (").append(exception.getMessage()).append(")");
                 } else {
                 	msg.append(" : ");
                 	if (result == null) {
@@ -67,8 +67,8 @@ class LoggerAspect {
                 msg.append("; Time ").append(formatTime(monitor));
                 writeLog(msg.toString(), methodDescription);
             } catch (Exception ex1) {
-                // vk: ошибки логирования не пускаем наружу
-                log.error("Ошибка логирования: " + ex1.getClass().getName() + ", " + ex1.getMessage());
+                // vk: do not show logging error
+                log.error("Logging error: " + ex1.getClass().getName() + ", " + ex1.getMessage());
             }
         }
         return result;
@@ -108,11 +108,10 @@ class LoggerAspect {
         result.setMonitorName(targetClass.getSimpleName() + '.' + method.getName());
 
         Logged logAs = method.getAnnotation(Logged.class);
-        if (logAs == null) // получаем аннотацию на классе, если метод не
-                           // зааннотирован
+        if (logAs == null)
             logAs = targetClass.getAnnotation(Logged.class);
 
-        if (logAs != null) // vk: не знаю как так может быть, но вдруг?
+        if (logAs != null)
         {
             if (StringUtils.isNotBlank(logAs.value()))
                 result.setName(logAs.value());

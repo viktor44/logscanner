@@ -32,7 +32,7 @@ public class SelectSaveToAction extends BaseAction
 
 	public SelectSaveToAction()
 	{
-		super("Открыть", Resources.getIcon("image.open.16"));
+		super(Resources.getStr("action.save_to.title"), Resources.getIcon("image.save_to.16"));
 	}
 	
 	@Override

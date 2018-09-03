@@ -46,6 +46,7 @@ public class Resources extends ListResourceBundle
 				{
 						{"error.not_implemented",			"Not implemented yet"},
 						{"error.log_open_error",			"Log file open error"},		// Ошибка при открытии лог-файла
+						//{"error.file_too_big",			"Log file open error"},		// Ошибка при открытии лог-файла
 						
 						{"action.file",						"File"},			// Файл
 						{"action.help",						"Help"},			// Справка
@@ -82,11 +83,21 @@ public class Resources extends ListResourceBundle
 						
 						{"dialog.select_locations.title",	"Where"},				// Где искать
 						{"dialog.select_locations.confirm",	"Host and path are equals in {0} and {1}. Continue?"},		// "{0} и {1} имеют одинаковые хост и путь. Продолжить?
+						{"dialog.select_locations.columns", ";;Code;Path"},	
+						
+						{"action.save_to.title",			"Open"},				// Открыть
+						
+						{"status_panel.status.ready",		"Ready"},				// Готов
+						{"status_panel.status.searching",	"Searching"},			// Идёт поиск
+						{"status_panel.status.stopping",	"Stopping"},			// Останавливаю
+						{"status_panel.status.done",		"Done"},				// Готово
+						{"status_panel.text",				"Processed {0} from {1}. Selected {2}"},	// Обработано {0} из {1}. Выбрано {2}
+						
 						
 //Images					
-						{"image.locations.16", 				loadImage("image.locations.16")},
+						{"image.select_locations.16", 		loadImage("image.locations.16")},
 						{"image.exit.16",					loadImage("image.exit.16")},
-						{"image.open.16",					loadImage("image.open.16")}
+						{"image.save_to.16",				loadImage("image.open.16")}
 						
         		};
 

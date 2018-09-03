@@ -114,7 +114,7 @@ public class SelectLocationsDialog extends BaseDialog
 
 	private class LocationsTreeTableModel implements TreeTableModel
 	{
-		private String[] columnNames = { "", "", "Код", "Путь" };
+		private String[] columnNames = Resources.getStr("dialog.select_locations.columns").split(";");
 		
 		private final LocationGroup root;
 		private final EventListenerList eventListeners = new EventListenerList();

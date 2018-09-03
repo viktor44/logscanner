@@ -1,6 +1,6 @@
 package org.logscanner;
 
-import org.logscanner.jobs.ConfigFileReader;
+import org.logscanner.jobs.LocationsReader;
 import org.logscanner.jobs.DirectoryFilesProcessor;
 import org.logscanner.jobs.DirsQueueReader;
 import org.logscanner.jobs.DirsQueueWriter;
@@ -75,7 +75,7 @@ public class BatchConfig extends DefaultBatchConfigurer
 	
 	@Bean
 	protected Step readDirectoriesStep(
-						@Qualifier("configFileReader") ItemReader<? extends Object> reader,
+						@Qualifier("locationsReader") ItemReader<? extends Object> reader,
 						@Qualifier("directoryFilesProcessor") ItemProcessor<? super Object, ? extends Object> processor,
 						@Qualifier("dirsQueueWriter") ItemWriter<? super Object> writer,
 						@Qualifier("readDirectoriesTaskExecutor") TaskExecutor taskExecutor
@@ -113,9 +113,9 @@ public class BatchConfig extends DefaultBatchConfigurer
 	}
 	
 	@Bean
-	protected ItemReader<? extends Object> configFileReader()
+	protected ItemReader<? extends Object> locationsReader()
 	{
-		return new ConfigFileReader();
+		return new LocationsReader();
 	}
 	
 	@Bean

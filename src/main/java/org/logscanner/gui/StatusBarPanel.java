@@ -14,6 +14,7 @@ import javax.swing.border.BevelBorder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdesktop.swingx.JXStatusBar;
+import org.logscanner.Resources;
 import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class StatusBarPanel extends JPanel
 		statusBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		JXStatusBar.Constraint c1 = new JXStatusBar.Constraint(); 
 		c1.setFixedWidth(100);
-		statusLabel = new JLabel("Готов");
+		statusLabel = new JLabel(Resources.getStr("status_panel.status.ready"));
 		statusBar.add(statusLabel, c1);
 		JXStatusBar.Constraint c2 = new JXStatusBar.Constraint(); 
 		progressLabel = new JLabel("");
@@ -62,13 +63,13 @@ public class StatusBarPanel extends JPanel
 						switch ((JobResultModel.JobState)event.getNewValue())
 						{
 							case RUNNED:
-								statusLabel.setText("Идёт поиск");
+								statusLabel.setText(Resources.getStr("status_panel.status.searching"));
 								break;
 							case STOPPING:
-								statusLabel.setText("Останавливаю");
+								statusLabel.setText(Resources.getStr("status_panel.status.stopping"));
 								break;
 							case STOPPED:
-								statusLabel.setText("Готово");
+								statusLabel.setText(Resources.getStr("status_panel.status.done"));
 								break;
 						}
 					}
@@ -90,7 +91,7 @@ public class StatusBarPanel extends JPanel
 							int processed = "processedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getProcessedFiles();
 							int selected = "selectedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getSelectedFiles();
 							int total = "filesToProcess".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getFilesToProcess();
-							progressLabel.setText("Обработано " + processed + " из " + total + ". Выбрано " + selected);
+							progressLabel.setText(Resources.getStr("status_panel.text", processed, total, selected));
 						}
 					}
 				}
