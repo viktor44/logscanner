@@ -8,34 +8,25 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.commons.lang3.StringUtils;
+import org.logscanner.Resources;
 import org.logscanner.common.gui.LeftDotRenderer;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.data.LogEvent;
 import org.logscanner.logger.LogUtils;
 import org.logscanner.service.JobResultModel;
-import org.oxbow.swingbits.dialog.task.TaskDialog;
-import org.oxbow.swingbits.dialog.task.TaskDialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,11 +126,13 @@ public class ResultsPanel extends JPanel
 					        	if (resultModel.isSuccess())
 					        		MessageBox.showMessageDialog(
 						        			null, 
-				        					"Готово. Работали " 
-				        						+ LogUtils.createDurationString(resultModel.getStartTime(), resultModel.getEndTime())
+				        					Resources.getStr(
+				        							"results_panel.text.done",
+				        							LogUtils.createDurationString(resultModel.getStartTime(), resultModel.getEndTime())
+				        					)
 					        		);
 					        	else
-					        		MessageBox.showExceptionDialog(null, "Ошибка", resultModel.getError());
+					        		MessageBox.showExceptionDialog(null, Resources.getStr("dialog.title.error"), resultModel.getError());
 					        });
 						}
 					}

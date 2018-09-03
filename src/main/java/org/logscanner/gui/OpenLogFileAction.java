@@ -7,6 +7,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
+import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.data.LogEvent;
 import org.logscanner.service.JobResultModel;
@@ -29,7 +30,7 @@ public class OpenLogFileAction extends BaseAction
 
 	public OpenLogFileAction() 
 	{
-		super("Открыть файл");
+		super(Resources.getStr("action.open_log.title"));
 	}
 
 	@Override

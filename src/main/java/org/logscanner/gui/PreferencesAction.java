@@ -2,8 +2,8 @@ package org.logscanner.gui;
 
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
-import java.nio.file.Files;
 
+import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.service.AppProperties;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class PreferencesAction extends BaseAction
 
 	public PreferencesAction() 
 	{
-		super("Настройки...");
+		super(Resources.getStr("action.preferences.title"));
 	}
 
 	@Override

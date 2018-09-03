@@ -10,9 +10,9 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.logscanner.AppConstants;
+import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.common.gui.MessageBox;
-import org.logscanner.exception.BusinessException;
 import org.logscanner.service.JobResultModel;
 import org.logscanner.service.SearchModel;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class SearchAction extends BaseAction {
 	private Job job;
 
 	public SearchAction() {
-		super("Искать");
+		super(Resources.getStr("action.search.title"));
 	}
 
 	@Override
@@ -63,11 +63,11 @@ public class SearchAction extends BaseAction {
 	
 	private boolean validate() {
 		if (searchModel.getSelectedLocations().isEmpty()) {
-			MessageBox.showMessageDialog(null, "Не выбрано ни одного расположения для поиска"); 
+			MessageBox.showMessageDialog(null, Resources.getStr("action.search.text.no_locations")); 
 			return false;
 		}
 		if (searchModel.isSaveToFile() && Files.exists(Paths.get(searchModel.getResultPath()))) {
-			if (!MessageBox.showConfirmDialog(null, MessageFormat.format("Файл {0} уже существует. Перезаписать?", searchModel.getResultPath()))) 
+			if (!MessageBox.showConfirmDialog(null, Resources.getStr("action.search.text.file_exists", searchModel.getResultPath()))) 
 				return false;
 		}
 		return true;

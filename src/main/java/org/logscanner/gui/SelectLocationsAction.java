@@ -26,7 +26,7 @@ public class SelectLocationsAction extends BaseAction
 	
 	public SelectLocationsAction()
 	{
-		super("Где", Resources.getIcon("image.locations.16"));
+		super(Resources.getStr("action.select_locations.title"), Resources.getIcon("image.locations.16"));
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 
+import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.data.LogEvent;
 import org.logscanner.service.JobResultModel;
@@ -27,7 +28,7 @@ public class CopyTextAction extends BaseAction
 
 	public CopyTextAction() 
 	{
-		super("Копировать текст");
+		super(Resources.getStr("action.copy_text.title"));
 	}
 
 	@Override

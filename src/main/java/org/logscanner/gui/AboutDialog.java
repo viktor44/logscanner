@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.logscanner.AppConstants;
+import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseDialog;
 import org.logscanner.service.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class AboutDialog extends BaseDialog
 
 	public AboutDialog()
 	{
-		super(null, "О программе", false);
+		super(null, Resources.getStr("dialog.about.title"), false);
 	}
 	
 	@PostConstruct
@@ -60,7 +61,7 @@ public class AboutDialog extends BaseDialog
 		c.ipady = 20;
 		panel.add(appNameLabel, c);
 		
-		JLabel versionLabel = new JLabel("Версия " + props.getVersion());
+		JLabel versionLabel = new JLabel(Resources.getStr("dialog.about.text.version", props.getVersion()));
 		versionLabel.setFont(new Font(appNameFont.getName(), Font.BOLD, 14));
 		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -68,7 +69,7 @@ public class AboutDialog extends BaseDialog
 		c.gridy = 1;
 		panel.add(versionLabel, c);
 
-		JLabel copyrightLabel = new JLabel("Copyright 2018 by Victor Kadachigov");
+		JLabel copyrightLabel = new JLabel(Resources.getStr("dialog.about.text.copyright"));
 		copyrightLabel.setFont(new Font(appNameFont.getName(), Font.PLAIN, 14));
 		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;

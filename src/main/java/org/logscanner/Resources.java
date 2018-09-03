@@ -44,14 +44,45 @@ public class Resources extends ListResourceBundle
 	{
 		return new Object[][] 
 				{
-						{"error.not_implemented",	"Not implemented yet"},
-						{"error.log_open_error",	"Ошибка при открытии лог-файла"},
-						{"action.file",				"Файл"},
-						{"action.help",				"Справка"},
-						{"dialog.title.error",		"Error"},		// Ошибка
-						{"dialog.title.warning",	"Warning"},		// Внимание
-						{"dialog.title.info",		"Information"},	// Информация
-						{"dialog.title.confirm",	"Confirm"},		// Подтверждение
+						{"error.not_implemented",			"Not implemented yet"},
+						{"error.log_open_error",			"Log file open error"},		// Ошибка при открытии лог-файла
+						
+						{"action.file",						"File"},			// Файл
+						{"action.help",						"Help"},			// Справка
+						{"dialog.title.error",				"Error"},			// Ошибка
+						{"dialog.title.warning",			"Warning"},			// Внимание
+						{"dialog.title.info",				"Information"},		// Информация
+						{"dialog.title.confirm",			"Confirm"},			// Подтверждение
+						
+						{"dialog.about.title",				"About"},			// О программе
+						{"dialog.about.text.version",		"Version {0}"},		// Версия
+						{"dialog.about.text.copyright",		"Copyright 2018 by Victor Kadachigov"},
+						{"dialog.button.cancel",			"Cancel"},			// Отмена
+						
+						{"action.copy_text.title",			"Copy text"},		// Копировать текст
+						{"action.exit.title",				"Exit"},			// Выход
+						{"action.open_log.title",			"Open file"},		// Открыть файл
+						{"action.preferences.title",		"Preferences..."},	// Настройки...
+						{"action.select_locations.title",	"Where?"},			// Где?
+						
+						{"results_panel.text.done",			"Done. Work time {0}"},	// "Готово. Работали " 
+						
+						{"action.search.title",				"Search"},				//  "Искать"
+						{"action.search.stop",				"Stop"},				//  "Остановить"
+						{"action.search.text.file_exists",	"File {0} already exists. Overwrite?"},	// "Файл {0} уже существует. Перезаписать?"
+						{"action.search.text.no_locations",	"No locations selected"},				// Не выбрано ни одного расположения для поиска
+						
+						{"search_panel.text.from",			"From: "},				// Период с: 
+						{"search_panel.text.to",			"to: "},				// по:
+						{"search_panel.text.where",			"Where: "},				//Где искать:
+						{"search_panel.text.file_mask",		"File mask: "},			// "Маска файлов: "
+						{"search_panel.text.result",		"Result: "},			// Результат:
+						{"search_panel.text.search",		"Search: "},			// Искать:
+						{"search_panel.text.text",			"text:"},				// "текст:"
+						
+						{"dialog.select_locations.title",	"Where"},				// Где искать
+						{"dialog.select_locations.confirm",	"Host and path are equals in {0} and {1}. Continue?"},		// "{0} и {1} имеют одинаковые хост и путь. Продолжить?
+						
 //Images					
 						{"image.locations.16", 				loadImage("image.locations.16")},
 						{"image.exit.16",					loadImage("image.exit.16")},

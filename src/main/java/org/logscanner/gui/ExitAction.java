@@ -15,7 +15,7 @@ public class ExitAction extends AbstractAction
 
 	public ExitAction()
 	{
-		super("Выход", Resources.getIcon("image.exit.16"));
+		super(Resources.getStr("action.exit.title"), Resources.getIcon("image.exit.16"));
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import javax.swing.tree.TreePath;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.logscanner.App;
+import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseDialog;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.common.gui.TableColumnAdjuster;
@@ -44,7 +45,7 @@ public class SelectLocationsDialog extends BaseDialog
 	
 	public SelectLocationsDialog(Set<String> selectedLocations)
 	{
-		super(App.getMainFrame(), "Где искать", true);
+		super(App.getMainFrame(), Resources.getStr("dialog.select_locations.title"), true);
 		setLocationRelativeTo(null);
 		treeTableModel.setSelectedItems(selectedLocations);
 	}
@@ -52,7 +53,7 @@ public class SelectLocationsDialog extends BaseDialog
 	@Override
 	protected JButton[] createButtons() 
 	{
-		return new JButton[] { dialogOkButton(), dialogCancelButton("Отмена") };
+		return new JButton[] { dialogOkButton(), dialogCancelButton(Resources.getStr("dialog.button.cancel")) };
 	}
 	
 	@Override
@@ -100,7 +101,7 @@ public class SelectLocationsDialog extends BaseDialog
 			{
 				if (Objects.equals(l.getHost(), loc.getHost()) && Objects.equals(l.getPath(), loc.getPath()))
 				{
-					result = MessageBox.showConfirmDialog(null, "" + l.getCode() + " и " + loc.getCode() + " имеют одинаковые хост и путь. Продолжить?");
+					result = MessageBox.showConfirmDialog(null, Resources.getStr("dialog.select_locations.confirm", l.getCode(), loc.getCode()));
 					break;
 				}
 			}
