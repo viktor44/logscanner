@@ -2,6 +2,7 @@ package org.logscanner.util;
 
 import java.util.Objects;
 
+import org.logscanner.Resources;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -20,12 +21,12 @@ public class ServiceHelper implements ApplicationContextAware {
     }
 
     public static <T> T getBean(String name, Class<T> tClass) {
-    	Objects.requireNonNull(context, "Spring context is null");
+    	Objects.requireNonNull(context, Resources.getStr("error.context_is_null"));
         return context.getBean(name, tClass);
     }
 
     public static <T> T getBean(Class<T> tClass) {
-    	Objects.requireNonNull(context, "Spring context is null");
+    	Objects.requireNonNull(context, Resources.getStr("error.context_is_null"));
         return context.getBean(tClass);
     }
 

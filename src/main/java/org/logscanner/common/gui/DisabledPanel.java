@@ -390,6 +390,7 @@ public class DisabledPanel extends JPanel
 		 *  may result in the DisabledEventQueue deregistering itself as the
 		 *  current EventQueue.
 		 */
+		@Override
 		public void windowClosed(WindowEvent e)
 		{
 			List<DisabledPanel> panelsToRemove = new ArrayList<DisabledPanel>();
@@ -417,11 +418,17 @@ public class DisabledPanel extends JPanel
 			window.removeWindowListener( this );
 		}
 
+		@Override
 		public void windowActivated(WindowEvent e) {}
+		@Override
 		public void windowClosing(WindowEvent e) {}
+		@Override
 		public void windowDeactivated(WindowEvent e) {}
+		@Override
 		public void windowDeiconified(WindowEvent e) {}
+		@Override
 		public void windowIconified(WindowEvent e) {}
+		@Override
 		public void windowOpened(WindowEvent e) {}
 	}
 }

@@ -51,10 +51,7 @@ public abstract class BaseFileService implements FileSystemService
 		{
 			case IN_MEMORY:
 				if (size > MAX_FILE_SIZE * 1024 * 1024) 
-					throw new FileTooBigException(
-								"Размер файла " 
-								+ path.toString() + " " + (size / (1024 * 1024))
-								+ "Mb превышает максимальное значение " + MAX_FILE_SIZE + "Mb");
+					throw new FileTooBigException(Resources.getStr("error.file_too_big", path.toString(), size / (1024 * 1024), MAX_FILE_SIZE));
 				result = new ByteContentReader(Files.readAllBytes(path));
 				break;
 			case URI:
@@ -81,7 +78,7 @@ public abstract class BaseFileService implements FileSystemService
 	public List<FileInfo> listFiles(Location location, FilterParams filterParams) throws IOException
 	{
 		if (!isSupported(location))
-			throw new IllegalArgumentException("Unsupported location type " + location.getType() + ". Expected " + LocationType.LOCAL);
+			throw new IllegalArgumentException(Resources.getStr("error.unsupported_location_type", location.getType()));
 		
 		LocalDirectoryScanner dirScanner = createDirectoryScanner(location);
 		dirScanner.setBasedir(location.getPath());

@@ -70,6 +70,7 @@ public class TokenizedPattern {
     /**
      * @return The pattern String
      */
+	@Override
     public String toString() {
         return pattern;
     }
@@ -83,11 +84,13 @@ public class TokenizedPattern {
      *
      * @param o Object
      */
+	@Override
     public boolean equals(Object o) {
         return o instanceof TokenizedPattern
             && pattern.equals(((TokenizedPattern) o).pattern);
     }
 
+	@Override
     public int hashCode() {
         return pattern.hashCode();
     }

@@ -9,6 +9,8 @@ import java.util.ResourceBundle;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.logscanner.data.LocationType;
+
 /**
  * @author Victor Kadachigov
  */
@@ -44,9 +46,14 @@ public class Resources extends ListResourceBundle
 	{
 		return new Object[][] 
 				{
-						{"error.not_implemented",			"Not implemented yet"},
+						{"error.not_implemented",			"Not implemented"},
+						{"error.cant_start",				"Application start error"},	// Ошибка запуска приложения
 						{"error.log_open_error",			"Log file open error"},		// Ошибка при открытии лог-файла
-						//{"error.file_too_big",			"Log file open error"},		// Ошибка при открытии лог-файла
+						{"error.file_too_big",				"File size {0} {1}Mb exceeds maximum {2}Mb"},		// Размер файла {0} {1}Mb превышает максимальное значение {2}Mb
+						{"error.unsupported_location_type",	"Unsupported location type {0}"},
+						{"error.code_is_empty",				"Empty code"},
+						{"error.code_already_used",			"Code '{0}' already used"},
+						{"error.context_is_null",			"Spring context is null"},
 						
 						{"action.file",						"File"},			// Файл
 						{"action.help",						"Help"},			// Справка

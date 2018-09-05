@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * @author Victor Kadachigov
  */
-public class ListItem<V> implements Comparable<ListItem>
+public class ListItem<V> implements Comparable<ListItem<V>>
 {
 	private V value;
 	private String description;
@@ -27,7 +27,7 @@ public class ListItem<V> implements Comparable<ListItem>
 	}
 
 	@Override
-	public int compareTo(ListItem item)
+	public int compareTo(ListItem<V> item)
 	{
 		return getDescription().compareTo(item.getDescription());
 	}

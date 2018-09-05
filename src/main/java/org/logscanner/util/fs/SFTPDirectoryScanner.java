@@ -72,6 +72,7 @@ public class SFTPDirectoryScanner extends LocalDirectoryScanner {
      * @return <code>false</code> when the selectors says that the file
      *         should not be selected, <code>true</code> otherwise.
      */
+	@Override
     protected boolean isSelected(final String name, final Path file) {
     	File basedirFile = new SFTPFileProxy(basedir);
         return selectors == null

@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.logscanner.Resources;
 import org.logscanner.data.LogPattern;
 import org.logscanner.exception.BusinessException;
 import org.logscanner.util.LocationHelper;
@@ -54,9 +55,9 @@ public class LogPatternDao extends DaoSupport
 		for (LogPattern lp : l)
 		{
 			if (StringUtils.isBlank(lp.getCode()))
-				throw new BusinessException("Empty pattern code");
+				throw new BusinessException(Resources.getStr("error.code_is_empty"));
 			if (!set.add(lp))
-				throw new BusinessException("Pattern code '" + lp.getCode() + "' already used");
+				throw new BusinessException(Resources.getStr("error.code_already_used", lp.getCode()));
 		}
 	}
 

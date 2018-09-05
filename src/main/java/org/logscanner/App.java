@@ -99,7 +99,7 @@ public class App
 			catch (Exception ex) 
 			{
 				ex.printStackTrace();
-				MessageBox.showExceptionDialog(null, "Ошибка запуска приложения", ex);
+				MessageBox.showExceptionDialog(null, Resources.getStr("error.cant_start"), ex);
 				System.exit(0);
 			}
 		}

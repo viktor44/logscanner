@@ -1,5 +1,6 @@
 package org.logscanner.service;
 
+import org.logscanner.Resources;
 import org.logscanner.data.Location;
 import org.logscanner.data.LocationType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class FileServiceSelector
 				result = sftp;
 				break;
 			default:
-				throw new UnsupportedOperationException("Unsupported location type " + locationType);
+				throw new UnsupportedOperationException(Resources.getStr("error.unsupported_location_type", locationType));
 		}
 		
 		return result;

@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.logscanner.Resources;
 import org.logscanner.data.Location;
 import org.logscanner.data.LocationGroup;
 import org.logscanner.data.LogPattern;
@@ -87,9 +88,9 @@ public class LocationHelper
 		for (Named item : list)
 		{
 			if (StringUtils.isBlank(item.getCode()))
-				throw new BusinessException("Empty code");
+				throw new BusinessException(Resources.getStr("error.code_is_empty"));
 			if (!set.add(item))
-				throw new BusinessException("Code '" + item.getCode() + "' already used");
+				throw new BusinessException(Resources.getStr("error.code_already_used", item.getCode()));
 		}
 		
 	}
