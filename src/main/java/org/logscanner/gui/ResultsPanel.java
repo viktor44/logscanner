@@ -155,7 +155,7 @@ public class ResultsPanel extends JPanel
 	{
 		private static final long serialVersionUID = 1L;
 		
-		private String[] columnNames = { "Время", "Файл", "Строка" };
+		private String[] columnNames = Resources.getStr("results_panel.columns").split(";");
 		private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		
 		public ResultsTableModel()
