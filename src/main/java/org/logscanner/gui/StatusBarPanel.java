@@ -9,16 +9,15 @@ import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdesktop.swingx.JXStatusBar;
-import org.logscanner.Resources;
 import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,6 +30,8 @@ public class StatusBarPanel extends JPanel
 
 	@Autowired
 	private JobResultModel resultModel;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 	
 	private JXStatusBar statusBar;
 	private JLabel statusLabel;
@@ -45,7 +46,7 @@ public class StatusBarPanel extends JPanel
 		statusBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		JXStatusBar.Constraint c1 = new JXStatusBar.Constraint(); 
 		c1.setFixedWidth(100);
-		statusLabel = new JLabel(Resources.getStr("status_panel.status.ready"));
+		statusLabel = new JLabel(messageAccessor.getMessage("status_panel.status.ready"));
 		statusBar.add(statusLabel, c1);
 		JXStatusBar.Constraint c2 = new JXStatusBar.Constraint(); 
 		progressLabel = new JLabel("");
@@ -63,13 +64,13 @@ public class StatusBarPanel extends JPanel
 						switch ((JobResultModel.JobState)event.getNewValue())
 						{
 							case RUNNED:
-								statusLabel.setText(Resources.getStr("status_panel.status.searching"));
+								statusLabel.setText(messageAccessor.getMessage("status_panel.status.searching"));
 								break;
 							case STOPPING:
-								statusLabel.setText(Resources.getStr("status_panel.status.stopping"));
+								statusLabel.setText(messageAccessor.getMessage("status_panel.status.stopping"));
 								break;
 							case STOPPED:
-								statusLabel.setText(Resources.getStr("status_panel.status.done"));
+								statusLabel.setText(messageAccessor.getMessage("status_panel.status.done"));
 								break;
 						}
 					}
@@ -91,7 +92,7 @@ public class StatusBarPanel extends JPanel
 							int processed = "processedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getProcessedFiles();
 							int selected = "selectedFiles".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getSelectedFiles();
 							int total = "filesToProcess".equals(event.getPropertyName()) ? (Integer)event.getNewValue() : resultModel.getFilesToProcess();
-							progressLabel.setText(Resources.getStr("status_panel.text", processed, total, selected));
+							progressLabel.setText(messageAccessor.getMessage("status_panel.text", new String[] { String.valueOf(processed), String.valueOf(total), String.valueOf(selected) } ));
 						}
 					}
 				}

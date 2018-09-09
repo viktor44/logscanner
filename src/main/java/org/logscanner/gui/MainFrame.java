@@ -23,11 +23,11 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import org.logscanner.AppConstants;
-import org.logscanner.Resources;
 import org.logscanner.common.gui.MessageBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -49,6 +49,8 @@ public class MainFrame extends JFrame
 	private AboutAction aboutAction;
 	@Autowired
 	private PreferencesAction preferencesAction;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 	
 	public MainFrame()
 	{
@@ -100,7 +102,7 @@ public class MainFrame extends JFrame
 
 	private JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
-		JMenu fileMenu = new JMenu(Resources.getStr("action.file"));
+		JMenu fileMenu = new JMenu(messageAccessor.getMessage("action.file"));
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		
 		menuBar.add(fileMenu);
@@ -109,7 +111,7 @@ public class MainFrame extends JFrame
 		fileMenu.add(new JSeparator());
 		fileMenu.add(new ExitAction());
 
-		JMenu helpMenu = new JMenu(Resources.getStr("action.help"));
+		JMenu helpMenu = new JMenu(messageAccessor.getMessage("action.help"));
 		fileMenu.setMnemonic(KeyEvent.VK_H);
 		
 		menuBar.add(helpMenu);
@@ -136,7 +138,7 @@ public class MainFrame extends JFrame
 				catch (Exception ex) 
 				{
 					log.error("", ex);
-					MessageBox.showExceptionDialog(null, Resources.getStr("error.log_open_error"), ex);
+					MessageBox.showExceptionDialog(null, messageAccessor.getMessage("error.log_open_error"), ex);
 				}
 			}
 			return false;

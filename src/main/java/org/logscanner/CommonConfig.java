@@ -1,11 +1,16 @@
 package org.logscanner;
 
 import java.nio.file.attribute.FileTime;
+import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.logscanner.logger.EnableLogger;
+import org.logscanner.service.AppProperties;
 import org.logscanner.util.ServiceHelper;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.MessageSourceAccessor;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -39,4 +44,10 @@ public class CommonConfig
 		return mapper;
 	}
 
+	@Bean
+	MessageSourceAccessor messageSourceAccessor(MessageSource messageSource, AppProperties props)
+	{
+		Locale locale = StringUtils.isNotBlank(props.getLocale()) ? new Locale(props.getLocale()) : null;  
+		return new MessageSourceAccessor(messageSource, locale);
+	}
 }

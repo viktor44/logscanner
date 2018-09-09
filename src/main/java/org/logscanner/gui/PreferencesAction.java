@@ -3,12 +3,14 @@ package org.logscanner.gui;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 
-import org.logscanner.Resources;
+import javax.annotation.PostConstruct;
+
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.service.AppProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,10 +24,13 @@ public class PreferencesAction extends BaseAction
 
 	@Autowired
 	private AppProperties props;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 
-	public PreferencesAction() 
+	@PostConstruct
+	public void init()
 	{
-		super(Resources.getStr("action.preferences.title"));
+		init(messageAccessor.getMessage("action.preferences.title"), null);
 	}
 
 	@Override

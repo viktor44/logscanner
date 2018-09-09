@@ -26,7 +26,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.apache.commons.lang3.StringUtils;
-import org.logscanner.Resources;
 import org.logscanner.common.gui.DisabledPanel;
 import org.logscanner.common.gui.ListItem;
 import org.logscanner.common.gui.datepicker.DatePickerSettings;
@@ -42,6 +41,7 @@ import org.logscanner.util.ServiceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 import com.jgoodies.binding.adapter.BasicComponentFactory;
@@ -72,6 +72,8 @@ public class SearchPanel extends JPanel
 	private SelectLocationsAction selectLocationsAction;
 	@Autowired
 	private LogPatternDao patternDao;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 	
 	private DateTimePicker fromPicker;
 	private DateTimePicker toPicker;
@@ -99,7 +101,7 @@ public class SearchPanel extends JPanel
 		Bindings.bind(fromPicker.getTimePicker(), "time", fromTimeAdapter);
 
 		final Box box1 = Box.createHorizontalBox();
-		box1.add(new JLabel(Resources.getStr("search_panel.text.from")));
+		box1.add(new JLabel(messageAccessor.getMessage("search_panel.text.from")));
 		box1.add(Box.createRigidArea(new Dimension(HPAD, 0)));
 		box1.add(fromPicker);
 
@@ -109,7 +111,7 @@ public class SearchPanel extends JPanel
 		ValueModel toTimeAdapter = beanAdapter.getValueModel("toTime");
 		Bindings.bind(toPicker.getTimePicker(), "time", toTimeAdapter);
 		box1.add(Box.createRigidArea(new Dimension(HPAD, 0)));
-		box1.add(new JLabel(Resources.getStr("search_panel.text.to")));
+		box1.add(new JLabel(messageAccessor.getMessage("search_panel.text.to")));
 		box1.add(Box.createRigidArea(new Dimension(HPAD, 0)));
 		box1.add(toPicker);
 		box1.add(Box.createHorizontalGlue());
@@ -120,7 +122,7 @@ public class SearchPanel extends JPanel
 		locationsText = new JTextField();
 		locationsText.setEditable(false);
 		final Box box2 = Box.createHorizontalBox();
-		box2.add(new JLabel(Resources.getStr("search_panel.text.where")));
+		box2.add(new JLabel(messageAccessor.getMessage("search_panel.text.where")));
 		box2.add(Box.createRigidArea(new Dimension(HPAD, 0)));
 		box2.add(locationsText);
 		selectLocationsAction.addPropertyChangeListener(
@@ -137,7 +139,7 @@ public class SearchPanel extends JPanel
 		panel1.add(Box.createRigidArea(new Dimension(0, VPAD)));
 		
 		final Box box6 = Box.createHorizontalBox();
-		box6.add(new JLabel(Resources.getStr("search_panel.text.file_mask")));
+		box6.add(new JLabel(messageAccessor.getMessage("search_panel.text.file_mask")));
 		box6.add(Box.createRigidArea(new Dimension(HPAD, 0)));
 		
 		List<ListItem<String>> patterns = createPatternsList();
@@ -177,7 +179,7 @@ public class SearchPanel extends JPanel
 					enableSaveToFileElements(event.getStateChange() == ItemEvent.SELECTED);
 				}
 		);
-		saveToCheck.setText(Resources.getStr("search_panel.text.result"));
+		saveToCheck.setText(messageAccessor.getMessage("search_panel.text.result"));
 		box3.add(saveToCheck);
 		box3.add(Box.createRigidArea(new Dimension(HPAD, 0)));
 		ValueModel saveToFileTextAdapter = beanAdapter.getValueModel("resultPath");
@@ -190,7 +192,7 @@ public class SearchPanel extends JPanel
 		panel1.add(Box.createRigidArea(new Dimension(0, VPAD)));
 
 		final JPanel panel2 = new JPanel(new BorderLayout());
-		panel2.add(new JLabel(Resources.getStr("search_panel.text.search")), BorderLayout.NORTH);
+		panel2.add(new JLabel(messageAccessor.getMessage("search_panel.text.search")), BorderLayout.NORTH);
 		panel2.add(createStringsSearchPanel(), BorderLayout.CENTER);
 //		JTabbedPane tabbedPane = new JTabbedPane();
 //		panel2.add(tabbedPane, BorderLayout.CENTER);
@@ -214,7 +216,7 @@ public class SearchPanel extends JPanel
 					if (event.getNewValue() == JobResultModel.JobState.RUNNED)
 					{
 						disabledPanel.setEnabled(false);
-						searchButton.setText(Resources.getStr("action.search.stop"));
+						searchButton.setText(messageAccessor.getMessage("action.search.stop"));
 						searchButton.setEnabled(true);
 					}
 					else if (event.getNewValue() == JobResultModel.JobState.STOPPING)
@@ -224,7 +226,7 @@ public class SearchPanel extends JPanel
 					else if (event.getNewValue() == JobResultModel.JobState.STOPPED)
 					{
 						disabledPanel.setEnabled(true);
-						searchButton.setText(Resources.getStr("action.search.title"));
+						searchButton.setText(messageAccessor.getMessage("action.search.title"));
 						searchButton.setEnabled(true);
 					}
 				}
@@ -261,7 +263,7 @@ public class SearchPanel extends JPanel
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		final Box box1 = Box.createHorizontalBox();
-		box1.add(new JLabel(Resources.getStr("search_panel.text.text")));
+		box1.add(new JLabel(messageAccessor.getMessage("search_panel.text.text")));
 		box1.add(Box.createRigidArea(new Dimension(HPAD, 0)));
 		ValueModel searchTextAdapter = beanAdapter.getValueModel("searchString");
 		searchText = BasicComponentFactory.createTextField(searchTextAdapter, false);

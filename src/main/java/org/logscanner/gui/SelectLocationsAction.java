@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.common.gui.BaseDialog;
@@ -11,6 +13,7 @@ import org.logscanner.service.SearchModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,10 +26,13 @@ public class SelectLocationsAction extends BaseAction
 
 	@Autowired
 	private SearchModel searchModel;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 	
-	public SelectLocationsAction()
+	@PostConstruct
+	public void init()
 	{
-		super(Resources.getStr("action.select_locations.title"), Resources.getIcon("image.select_locations.16"));
+		init(messageAccessor.getMessage("action.select_locations.title"), Resources.getIcon("image.select_locations.16"));
 	}
 	
 	@Override

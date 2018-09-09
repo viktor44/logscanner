@@ -2,8 +2,11 @@ package org.logscanner.gui;
 
 import java.awt.event.ActionEvent;
 
+import javax.annotation.PostConstruct;
+
 import org.logscanner.common.gui.BaseAction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,10 +19,13 @@ public class AboutAction extends BaseAction
 	
 	@Autowired
 	private AboutDialog aboutDialog;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 
-	public AboutAction()
+	@PostConstruct
+	public void init()
 	{
-		super("О программе");
+		init(messageAccessor.getMessage("action.about.title"), null);
 	}
 	
 	@Override

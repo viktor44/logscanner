@@ -5,13 +5,15 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 
-import org.logscanner.Resources;
+import javax.annotation.PostConstruct;
+
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.data.LogEvent;
 import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,10 +27,13 @@ public class CopyTextAction extends BaseAction
 	
 	@Autowired
 	private JobResultModel resultModel;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 
-	public CopyTextAction() 
+	@PostConstruct
+	public void init()
 	{
-		super(Resources.getStr("action.copy_text.title"));
+		init(messageAccessor.getMessage("action.copy_text.title"), null);
 	}
 
 	@Override

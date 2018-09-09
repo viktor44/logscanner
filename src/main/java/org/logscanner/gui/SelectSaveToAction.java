@@ -3,6 +3,7 @@ package org.logscanner.gui;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
+import javax.annotation.PostConstruct;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -14,6 +15,7 @@ import org.logscanner.service.SearchModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,10 +31,13 @@ public class SelectSaveToAction extends BaseAction
 	
 	@Autowired
 	private SearchModel searchModel;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 
-	public SelectSaveToAction()
+	@PostConstruct
+	public void init()
 	{
-		super(Resources.getStr("action.save_to.title"), Resources.getIcon("image.save_to.16"));
+		init(messageAccessor.getMessage("action.save_to.title"), Resources.getIcon("image.save_to.16"));
 	}
 	
 	@Override

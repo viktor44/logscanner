@@ -21,7 +21,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
 import org.apache.commons.lang3.StringUtils;
-import org.logscanner.Resources;
 import org.logscanner.common.gui.LeftDotRenderer;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.data.LogEvent;
@@ -30,6 +29,7 @@ import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,6 +47,8 @@ public class ResultsPanel extends JPanel
 	private CopyTextAction copyTextAction;
 	@Autowired
 	private OpenLogFileAction openLogFileAction;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 	
 	ResultsTableModel resultsTableModel;
 	
@@ -126,13 +128,13 @@ public class ResultsPanel extends JPanel
 					        	if (resultModel.isSuccess())
 					        		MessageBox.showMessageDialog(
 						        			null, 
-				        					Resources.getStr(
+						        			messageAccessor.getMessage(
 				        							"results_panel.text.done",
-				        							LogUtils.createDurationString(resultModel.getStartTime(), resultModel.getEndTime())
+				        							new String[] { LogUtils.createDurationString(resultModel.getStartTime(), resultModel.getEndTime()) }
 				        					)
 					        		);
 					        	else
-					        		MessageBox.showExceptionDialog(null, Resources.getStr("dialog.title.error"), resultModel.getError());
+					        		MessageBox.showExceptionDialog(null, messageAccessor.getMessage("dialog.title.error"), resultModel.getError());
 					        });
 						}
 					}
@@ -155,7 +157,7 @@ public class ResultsPanel extends JPanel
 	{
 		private static final long serialVersionUID = 1L;
 		
-		private String[] columnNames = Resources.getStr("results_panel.columns").split(";");
+		private String[] columnNames = messageAccessor.getMessage("results_panel.columns").split(";");
 		private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		
 		public ResultsTableModel()

@@ -29,6 +29,7 @@ import org.logscanner.util.fs.LocalDirectoryScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 
 /**
  * @author Victor Kadachigov
@@ -40,6 +41,8 @@ public abstract class BaseFileService implements FileSystemService
 	
 	@Autowired
 	protected CacheManager cacheManager;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 	
 	@Override
 	public ContentReader readContent(FileInfo file, ReaderType reader) throws IOException, BusinessException
@@ -51,7 +54,12 @@ public abstract class BaseFileService implements FileSystemService
 		{
 			case IN_MEMORY:
 				if (size > MAX_FILE_SIZE * 1024 * 1024) 
-					throw new FileTooBigException(Resources.getStr("error.file_too_big", path.toString(), size / (1024 * 1024), MAX_FILE_SIZE));
+					throw new FileTooBigException(
+									messageAccessor.getMessage(
+											"error.file_too_big", 
+											new String[] { path.toString(), String.valueOf(size / (1024 * 1024)), String.valueOf(MAX_FILE_SIZE) }
+									)
+							);
 				result = new ByteContentReader(Files.readAllBytes(path));
 				break;
 			case URI:

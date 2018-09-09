@@ -18,6 +18,10 @@ public abstract class BaseAction extends AbstractAction
 {
 	private static Logger log = LoggerFactory.getLogger(BaseAction.class);
 
+	public BaseAction() 
+    {
+    	super();
+    }
 	public BaseAction(String name) 
     {
     	super(name);
@@ -27,6 +31,14 @@ public abstract class BaseAction extends AbstractAction
     	super(name, icon);
     	putValue(Action.SHORT_DESCRIPTION, name);
     }
+	
+	protected void init(String name, Icon icon)
+	{
+		putValue(Action.NAME, name);
+		putValue(Action.SHORT_DESCRIPTION, name);
+		if (icon != null)
+			putValue(Action.SMALL_ICON, icon);
+	}
 	
 	@Override
 	public final void actionPerformed(ActionEvent event)

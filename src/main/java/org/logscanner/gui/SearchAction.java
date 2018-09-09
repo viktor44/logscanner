@@ -8,9 +8,10 @@ import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.logscanner.AppConstants;
-import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.service.JobResultModel;
@@ -23,6 +24,7 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,31 +45,38 @@ public class SearchAction extends BaseAction {
 	private JobOperator jobOperator;
 	@Autowired
 	private Job job;
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
 
-	public SearchAction() {
-		super(Resources.getStr("action.search.title"));
+	@PostConstruct
+	public void init()
+	{
+		init(messageAccessor.getMessage("action.search.title"), null);
 	}
 
 	@Override
-	protected void actionPerformed0(ActionEvent event) throws Exception {
+	protected void actionPerformed0(ActionEvent event) throws Exception 
+	{
 		if (resultModel.getJobState() == JobResultModel.JobState.STOPPED)
 			start();
 		else if (resultModel.getJobState() == JobResultModel.JobState.RUNNED)
 			stop();
 	}
 
-	private void stop() throws Exception {
+	private void stop() throws Exception 
+	{
 		resultModel.stopping();
 		jobOperator.stop(searchModel.getExecutionId());
 	}
 	
-	private boolean validate() {
+	private boolean validate() 
+	{
 		if (searchModel.getSelectedLocations().isEmpty()) {
-			MessageBox.showMessageDialog(null, Resources.getStr("action.search.text.no_locations")); 
+			MessageBox.showMessageDialog(null, messageAccessor.getMessage("action.search.text.no_locations")); 
 			return false;
 		}
 		if (searchModel.isSaveToFile() && Files.exists(Paths.get(searchModel.getResultPath()))) {
-			if (!MessageBox.showConfirmDialog(null, Resources.getStr("action.search.text.file_exists", searchModel.getResultPath()))) 
+			if (!MessageBox.showConfirmDialog(null, messageAccessor.getMessage("action.search.text.file_exists", new String[] { searchModel.getResultPath() }))) 
 				return false;
 		}
 		return true;
