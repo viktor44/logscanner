@@ -28,6 +28,8 @@ public class SelectLocationsAction extends BaseAction
 	private SearchModel searchModel;
 	@Autowired
 	private MessageSourceAccessor messageAccessor;
+	@Autowired
+	private SelectLocationsDialog selectLocationsDialog;
 	
 	@PostConstruct
 	public void init()
@@ -38,12 +40,12 @@ public class SelectLocationsAction extends BaseAction
 	@Override
 	public void actionPerformed0(ActionEvent event) 
 	{
-		SelectLocationsDialog dialog = new SelectLocationsDialog(searchModel.getSelectedLocations());
-		dialog.setVisible(true);
-		if (Objects.equals(dialog.getCloseAction(), BaseDialog.ACTION_OK))
+		selectLocationsDialog.setSelectedLocations(searchModel.getSelectedLocations());
+		selectLocationsDialog.setVisible(true);
+		if (Objects.equals(selectLocationsDialog.getCloseAction(), BaseDialog.ACTION_OK))
 		{
 			Set<String> oldValue = searchModel.getSelectedLocations();
-			searchModel.setSelectedLocations(dialog.getSelectedLocations());
+			searchModel.setSelectedLocations(selectLocationsDialog.getSelectedLocations());
 			firePropertyChange("locations", oldValue, searchModel.getSelectedLocations());
 		}
 	}

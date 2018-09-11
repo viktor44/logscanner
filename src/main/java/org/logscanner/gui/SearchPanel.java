@@ -125,11 +125,17 @@ public class SearchPanel extends JPanel
 		box2.add(new JLabel(messageAccessor.getMessage("search_panel.text.where")));
 		box2.add(Box.createRigidArea(new Dimension(HPAD, 0)));
 		box2.add(locationsText);
-		selectLocationsAction.addPropertyChangeListener(
-				(PropertyChangeEvent event) -> 
-				{
-					if (Objects.equals(event.getPropertyName(), "locations"))
-						locationsText.setText(createLocationsString());
+//		selectLocationsAction.addPropertyChangeListener(
+//				(PropertyChangeEvent event) -> 
+//				{
+//					if (Objects.equals(event.getPropertyName(), "locations"))
+//						locationsText.setText(createLocationsString());
+//				}
+//		);
+		searchModel.addPropertyChangeListener(
+				"selectedLocations",
+				(PropertyChangeEvent event) -> {
+					locationsText.setText(createLocationsString((Set<String>)event.getNewValue()));
 				}
 		);
 		box2.add(Box.createRigidArea(new Dimension(HPAD, 0)));
@@ -298,7 +304,7 @@ public class SearchPanel extends JPanel
 		return panel;
 	}
 	
-	private String createLocationsString()
+	private String createLocationsString(Set<String> selectedLocations)
 	{
 		StringBuilder sb = new StringBuilder();
 		LocationDao locationDao = ServiceHelper.getBean(LocationDao.class);
@@ -306,7 +312,7 @@ public class SearchPanel extends JPanel
 		List<String> groupNames = new ArrayList<>();
 		List<String> locationNames = new ArrayList<>();
 		Set<String> locationCodes = new HashSet<>();
-		for (String code : searchModel.getSelectedLocations())
+		for (String code : selectedLocations)
 		{
 			LocationGroup group = locationDao.getGroupByCode(code);
 			if (group != null)

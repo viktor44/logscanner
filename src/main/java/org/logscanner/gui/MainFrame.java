@@ -48,13 +48,23 @@ public class MainFrame extends JFrame
 	@Autowired
 	private AboutAction aboutAction;
 	@Autowired
+	private ExitAction exitAction;
+	@Autowired
 	private PreferencesAction preferencesAction;
 	@Autowired
 	private MessageSourceAccessor messageAccessor;
 	
-	public MainFrame()
+	@PostConstruct
+	public void init()
 	{
-		super(AppConstants.APP_NAME);
+		MessageBox.changeTitles(
+				messageAccessor.getMessage("dialog.title.error"), 
+				messageAccessor.getMessage("dialog.title.warning"),
+				messageAccessor.getMessage("dialog.title.info"),
+				messageAccessor.getMessage("dialog.title.confirm")
+		);
+		
+		setTitle(AppConstants.APP_NAME);
 		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		List<Image> icons = new ArrayList<Image>();
@@ -64,12 +74,8 @@ public class MainFrame extends JFrame
 		icons.add(toolkit.createImage(MainFrame.class.getResource("/images/app1/log_64.png")));
 		icons.add(toolkit.createImage(MainFrame.class.getResource("/images/app1/log_128.png")));
 		setIconImages(icons);
-	}
-	
-	@PostConstruct
-	public void init()
-	{
-        setSize(800, 600);
+
+		setSize(800, 600);
 		
         setLocationRelativeTo(null);
 
@@ -88,15 +94,6 @@ public class MainFrame extends JFrame
 		result.add(searchPanel, BorderLayout.NORTH);
 		result.add(resultsPanel, BorderLayout.CENTER);
 		result.add(statusBarPanel, BorderLayout.SOUTH);
-		
-//		JXStatusBar statusBar = new JXStatusBar();
-//		statusBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-//		JLabel statusLabel = new JLabel("Ready");
-//		JXStatusBar.Constraint c1 = new JXStatusBar.Constraint(); 
-//		c1.setFixedWidth(100);
-//		statusBar.add(statusLabel, c1);
-//		result.add(statusBar, BorderLayout.SOUTH);
-
 		return result;
 	}
 
@@ -109,7 +106,7 @@ public class MainFrame extends JFrame
 
 		fileMenu.add(preferencesAction);
 		fileMenu.add(new JSeparator());
-		fileMenu.add(new ExitAction());
+		fileMenu.add(exitAction);
 
 		JMenu helpMenu = new JMenu(messageAccessor.getMessage("action.help"));
 		fileMenu.setMnemonic(KeyEvent.VK_H);

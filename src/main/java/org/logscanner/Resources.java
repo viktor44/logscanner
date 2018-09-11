@@ -51,66 +51,22 @@ public class Resources extends ListResourceBundle
 				{
 						{"error.not_implemented",			"Not implemented"},
 						{"error.cant_start",				"Application start error"},
-						{"error.log_open_error",			"Log file open error"},
-						{"error.file_too_big",				"File size {0} {1}Mb exceeds maximum {2}Mb"},
 						{"error.unsupported_location_type",	"Unsupported location type {0}"},
 						{"error.code_is_empty",				"Empty code"},
 						{"error.code_already_used",			"Code '{0}' already used"},
 						{"error.context_is_null",			"Spring context is null"},
-						
-						{"action.file",						"File"},
-						{"action.help",						"Help"},
 						{"dialog.title.error",				"Error"},
 						{"dialog.title.warning",			"Warning"},
 						{"dialog.title.info",				"Information"},
 						{"dialog.title.confirm",			"Confirm"},
 						
-						{"dialog.about.title",				"About"},
-						{"dialog.about.text.version",		"Version {0}"},
-						{"dialog.about.text.copyright",		"Copyright 2018 by Victor Kadachigov"},
-						{"dialog.button.cancel",			"Cancel"},
-						
-						{"action.copy_text.title",			"Copy text"},
-						{"action.exit.title",				"Exit"},
-						{"action.open_log.title",			"Open file"},
-						{"action.preferences.title",		"Preferences..."},
-						{"action.select_locations.title",	"Where?"},
-						
-						{"results_panel.text.done",			"Done. Work time {0}"}, 
-						{"results_panel.columns",			"Time;File;Text"},
-						
-						{"action.search.title",				"Search"},
-						{"action.search.stop",				"Stop"},
-						{"action.search.text.file_exists",	"File {0} already exists. Overwrite?"},
-						{"action.search.text.no_locations",	"No locations selected"},
-						
-						{"search_panel.text.from",			"From: "}, 
-						{"search_panel.text.to",			"to: "},
-						{"search_panel.text.where",			"Where: "},
-						{"search_panel.text.file_mask",		"File mask: "},
-						{"search_panel.text.result",		"Result: "},
-						{"search_panel.text.search",		"Search: "},
-						{"search_panel.text.text",			"text:"},
-						
-						{"dialog.select_locations.title",	"Where"},
-						{"dialog.select_locations.confirm",	"Host and path are equals in {0} and {1}. Continue?"},
-						{"dialog.select_locations.columns", ";;Code;Path"},	
-						
-						{"action.save_to.title",			"Open"},
-						
-						{"status_panel.status.ready",		"Ready"},
-						{"status_panel.status.searching",	"Searching"},
-						{"status_panel.status.stopping",	"Stopping"},
-						{"status_panel.status.done",		"Done"},
-						{"status_panel.text",				"Processed {0} from {1}. Selected {2}"},
 						
 //Images					
-						{"image.select_locations.16", 		loadImage("image.locations.16")},
-						{"image.exit.16",					loadImage("image.exit.16")},
-						{"image.save_to.16",				loadImage("image.open.16")}
+						{"image.select_locations.16", 		loadIcon("image.locations.16")},
+						{"image.exit.16",					loadIcon("image.exit.16")},
+						{"image.save_to.16",				loadIcon("image.open.16")}
 						
         		};
-
 	}
 
 	private String findResourcePath(String key)
@@ -127,7 +83,7 @@ public class Resources extends ListResourceBundle
 		return result;
 	}
 	
-	private Icon loadImage(String key)
+	private Icon loadIcon(String key)
 	{
 		String imagePath = findResourcePath(key);
 		URL imageURL = Resources.class.getResource(imagePath);

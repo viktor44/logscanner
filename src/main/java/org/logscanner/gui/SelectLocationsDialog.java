@@ -3,24 +3,27 @@ package org.logscanner.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.EventListenerList;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 
 import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.logscanner.App;
-import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseDialog;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.common.gui.TableColumnAdjuster;
@@ -28,13 +31,17 @@ import org.logscanner.data.Location;
 import org.logscanner.data.LocationGroup;
 import org.logscanner.service.LocationDao;
 import org.logscanner.util.LocationHelper;
-import org.logscanner.util.ServiceHelper;
+import org.logscanner.util.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Victor Kadachigov
  */
+@Component
 public class SelectLocationsDialog extends BaseDialog 
 {
 	private static final long serialVersionUID = 1L;
@@ -42,18 +49,30 @@ public class SelectLocationsDialog extends BaseDialog
 
 	private JXTreeTable treeTable;
 	private LocationsTreeTableModel treeTableModel;
-	
-	public SelectLocationsDialog(Set<String> selectedLocations)
+
+	@Autowired
+	private MessageSourceAccessor messageAccessor;
+	@Autowired
+	private LocationDao locationDao;
+
+	public SelectLocationsDialog()
 	{
-		super(App.getMainFrame(), Resources.getStr("dialog.select_locations.title"), true);
+		super(null, null, false);
+	}
+	
+	@Override
+	@PostConstruct
+	public void init()
+	{
+		super.init();
+		setTitle(messageAccessor.getMessage("dialog.select_locations.title"));
 		setLocationRelativeTo(null);
-		treeTableModel.setSelectedItems(selectedLocations);
 	}
 	
 	@Override
 	protected JButton[] createButtons() 
 	{
-		return new JButton[] { dialogOkButton(), dialogCancelButton(Resources.getStr("dialog.button.cancel")) };
+		return new JButton[] { dialogOkButton(), dialogCancelButton(messageAccessor.getMessage("dialog.button.cancel")) };
 	}
 	
 	@Override
@@ -66,7 +85,6 @@ public class SelectLocationsDialog extends BaseDialog
 		d.height = 640;
 		panel.setPreferredSize(d);
 		
-		LocationDao locationDao = ServiceHelper.getBean(LocationDao.class);
 		treeTableModel = new LocationsTreeTableModel(locationDao.getRootGroup());
 //		treeTableModel = new LocationsTreeTableModel(LocationDao.createTestRoot());
 		treeTable = new JXTreeTable(treeTableModel);
@@ -82,6 +100,10 @@ public class SelectLocationsDialog extends BaseDialog
 	{
 		return treeTableModel.getSelectedItems();
 	}
+	public void setSelectedLocations(Set<String> selectedLocations)
+	{
+		treeTableModel.setSelectedItems(selectedLocations);
+	}
 	
 	@Override
 	protected boolean canClose(String actionCommand)
@@ -90,7 +112,6 @@ public class SelectLocationsDialog extends BaseDialog
 			return true;
 		
 		Boolean result = null;
-		LocationDao locationDao = ServiceHelper.getBean(LocationDao.class);
 		List<Location> locations = new ArrayList<>();
 		for (String lid : getSelectedLocations())
 		{
@@ -101,7 +122,10 @@ public class SelectLocationsDialog extends BaseDialog
 			{
 				if (Objects.equals(l.getHost(), loc.getHost()) && Objects.equals(l.getPath(), loc.getPath()))
 				{
-					result = MessageBox.showConfirmDialog(null, Resources.getStr("dialog.select_locations.confirm", l.getCode(), loc.getCode()));
+					result = MessageBox.showConfirmDialog(
+									null, 
+									messageAccessor.getMessage("dialog.select_locations.confirm", new String[] { l.getCode(), loc.getCode() })
+							);
 					break;
 				}
 			}
@@ -112,22 +136,19 @@ public class SelectLocationsDialog extends BaseDialog
 		return result != null ? result : true;
 	}
 
-	private class LocationsTreeTableModel implements TreeTableModel
+	private class LocationsTreeTableModel extends AbstractTreeTableModel
 	{
-		private String[] columnNames = Resources.getStr("dialog.select_locations.columns").split(";");
-		
-		private final LocationGroup root;
-		private final EventListenerList eventListeners = new EventListenerList();
+		private final String[] columnNames = messageAccessor.getMessage("dialog.select_locations.columns").split(";");
 		private final Set<String> selectedItems = new HashSet<>();
 		
 		LocationsTreeTableModel(LocationGroup root)
 		{
-			this.root = root;
+			super(root);
 		}
 		
 		@Override
-		public Object getRoot() {
-			return root;
+		public LocationGroup getRoot() {
+			return (LocationGroup)root;
 		}
 
 		@Override
@@ -160,17 +181,6 @@ public class SelectLocationsDialog extends BaseDialog
 		}
 
 		@Override
-		public boolean isLeaf(Object node) 
-		{
-			return getChildCount(node) == 0;
-		}
-
-		@Override
-		public void valueForPathChanged(TreePath path, Object newValue) 
-		{
-		}
-
-		@Override
 		public int getIndexOfChild(Object parent, Object child) 
 		{
 			int result = -1;
@@ -183,18 +193,6 @@ public class SelectLocationsDialog extends BaseDialog
 					result = group.getItems().indexOf(child);
 			}
 			return result;
-		}
-
-		@Override
-		public void addTreeModelListener(TreeModelListener l) 
-		{
-			eventListeners.add(TreeModelListener.class, l);
-		}
-
-		@Override
-		public void removeTreeModelListener(TreeModelListener l) 
-		{
-			eventListeners.remove(TreeModelListener.class, l);
 		}
 
 		@Override
@@ -228,41 +226,22 @@ public class SelectLocationsDialog extends BaseDialog
 		public Object getValueAt(Object node, int column) 
 		{
 			Object result = null;
-			if (node instanceof LocationGroup)
+			Named namedNode = (Named)node;
+			switch (column)
 			{
-				LocationGroup group = (LocationGroup)node;
-				switch (column)
-				{
-					case 0:
-						result = selectedItems.contains(group.getCode());
-						break;
-					case 2:
-						result = group.getCode();
-						break;
-					case 3:
-						result = group.getName();
-						break;
-				}
-			}
-			else if (node instanceof Location)
-			{
-				Location location = (Location)node;
-				switch (column)
-				{
-					case 0:
-						result = selectedItems.contains(location.getCode());
-						break;
-					case 2:
-						result = location.getCode();
-						break;
-					case 3:
-						result = location.getName();
-						break;
-				}
+				case 0:
+					result = selectedItems.contains(namedNode.getCode());
+					break;
+				case 2:
+					result = namedNode.getCode();
+					break;
+				case 3:
+					result = namedNode.getName();
+					break;
 			}
 			return result;
 		}
-
+		
 		@Override
 		public boolean isCellEditable(Object node, int column) 
 		{
@@ -276,13 +255,16 @@ public class SelectLocationsDialog extends BaseDialog
 				return;
 			
 			boolean b = (Boolean)value;
+			
+			Named namedNode = (Named)node;
+			if (b)
+				selectedItems.add(namedNode.getCode());
+			else
+				selectedItems.remove(namedNode.getCode());
+			
 			if (node instanceof LocationGroup)
 			{
 				LocationGroup group = (LocationGroup)node;
-				if (b)
-					selectedItems.add(group.getCode());
-				else
-					selectedItems.remove(group.getCode());
 				if (group.getGroups() != null)
 					group.getGroups().forEach(item -> setValueAt(value, item, column));
 				if (group.getItems() != null)
@@ -290,16 +272,13 @@ public class SelectLocationsDialog extends BaseDialog
 			}
 			else if (node instanceof Location)
 			{
-				Location location = (Location)node;
-				if (b)
-					selectedItems.add(location.getCode());
-				else
+				if (!b)
 				{
 					boolean stop = false;
-					String lid = location.getCode();
+					String lid = namedNode.getCode();
 					while (!stop)
 					{
-						LocationGroup group = LocationHelper.getParent(root, root, lid);
+						LocationGroup group = LocationHelper.getParent(getRoot(), getRoot(), lid);
 						stop = group == null;
 						if (!stop)
 						{
@@ -307,22 +286,19 @@ public class SelectLocationsDialog extends BaseDialog
 							selectedItems.remove(lid);
 						}
 					}
-					selectedItems.remove(location.getCode());
 				}
 			}
 		}
 
 		public Set<String> getSelectedItems() 
 		{
-			return selectedItems;
+			return Collections.unmodifiableSet(selectedItems);
 		}
 		public void setSelectedItems(Set<String> selectedItems) 
 		{
-			if (selectedItems != null && ! selectedItems.isEmpty())
-			{
-				this.selectedItems.clear();
+			this.selectedItems.clear();
+			if (selectedItems != null && !selectedItems.isEmpty())
 				this.selectedItems.addAll(selectedItems);
-			}
 		}
 	}
 	

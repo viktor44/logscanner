@@ -35,11 +35,6 @@ public class App
 		//MacOs application name: -Xdock:name="Log Scanner"
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		
-//		ServiceLoader.load(FileSystemProvider.class)
-//			.forEach(service -> System.out.println("ZZZ: " + service)); 
-//		ServiceLoader.load(FileSystemProvider.class, ClassLoader.getSystemClassLoader())
-//			.forEach(service -> System.out.println("XXX: " + service)); 
-	
     	try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

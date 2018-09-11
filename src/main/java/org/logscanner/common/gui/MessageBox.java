@@ -17,6 +17,19 @@ public class MessageBox
 {
 	private MessageBox() {}
 	
+	private static String errorTitle = Resources.getStr("dialog.title.error");
+	private static String warningTitle = Resources.getStr("dialog.title.warning");
+	private static String infoTitle = Resources.getStr("dialog.title.info");
+	private static String confirmTitle = Resources.getStr("dialog.title.confirm");
+	
+	public static void changeTitles(String error, String warning, String info, String confirm)
+	{
+		errorTitle = error;
+		warningTitle = warning;
+		infoTitle = info;
+		confirmTitle = confirm;
+	}
+	
 	public static void showErrorDialog(Component parentComponent, Throwable exception)
 	{
 		showErrorDialog(parentComponent, ExceptionUtils.getRootCauseMessage(exception));
@@ -27,7 +40,7 @@ public class MessageBox
 		JOptionPane.showMessageDialog(
 				parentComponent, 
 				message, 
-				Resources.getStr("dialog.title.error"), 
+				errorTitle, 
 				JOptionPane.ERROR_MESSAGE
 		);
 	}
@@ -37,7 +50,7 @@ public class MessageBox
 		JOptionPane.showMessageDialog(
 				parentComponent, 
 				message, 
-				Resources.getStr("dialog.title.warning"), 
+				warningTitle, 
 				JOptionPane.WARNING_MESSAGE
 		);
 	}
@@ -47,7 +60,7 @@ public class MessageBox
 		JOptionPane.showMessageDialog(
 				parentComponent, 
 				message, 
-				Resources.getStr("dialog.title.info"), 
+				infoTitle, 
 				JOptionPane.INFORMATION_MESSAGE
 		);
 	}
@@ -57,7 +70,7 @@ public class MessageBox
 		int result = JOptionPane.showConfirmDialog(
 								parentComponent, 
 								message, 
-								Resources.getStr("dialog.title.confirm"), 
+								confirmTitle, 
 								JOptionPane.YES_NO_OPTION
 						);
 		return result == JOptionPane.YES_OPTION;

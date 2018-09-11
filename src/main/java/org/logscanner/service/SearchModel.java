@@ -39,8 +39,8 @@ public class SearchModel
 	private LocalTime toTime;
 	private boolean saveToFile;
 	private String resultPath;
-	private Set<String> selectedLocations;
-	private List<String> searchStrings;
+	private Set<String> selectedLocations = new HashSet<>();
+//	private List<String> searchStrings;
 	private String searchString;
 	private String patternCode;
 	private Long executionId;
@@ -78,15 +78,16 @@ public class SearchModel
 	}
 	public void setSelectedLocations(Set<String> selectedLocations) {
 		firePropertyChange("selectedLocations", this.selectedLocations, selectedLocations);
-		this.selectedLocations = selectedLocations;
+		this.selectedLocations.clear();
+		this.selectedLocations.addAll(selectedLocations);
 	}
-	public List<String> getSearchStrings() {
-		return searchStrings;
-	}
-	public void setSearchStrings(List<String> searchStrings) {
-		firePropertyChange("searchStrings", this.searchStrings, searchStrings);
-		this.searchStrings = searchStrings;
-	}
+//	public List<String> getSearchStrings() {
+//		return searchStrings;
+//	}
+//	public void setSearchStrings(List<String> searchStrings) {
+//		firePropertyChange("searchStrings", this.searchStrings, searchStrings);
+//		this.searchStrings = searchStrings;
+//	}
 	
 	public String getSearchString() {
 		return searchString;

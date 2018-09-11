@@ -8,10 +8,12 @@ import org.logscanner.Resources;
 import org.logscanner.common.gui.BaseAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Victor Kadachigov
  */
+@Component
 public class ExitAction extends BaseAction
 {
 	private static final long serialVersionUID = 1L;

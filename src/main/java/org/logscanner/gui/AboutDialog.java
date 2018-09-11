@@ -36,6 +36,7 @@ public class AboutDialog extends BaseDialog
 		super(null, null, false);
 	}
 	
+	@Override
 	@PostConstruct
 	public void init()
 	{
