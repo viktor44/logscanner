@@ -10,8 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractListModel;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.SwingPropertyChangeSupport;
@@ -20,27 +18,25 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.logscanner.data.LogEvent;
 import org.logscanner.logger.LogUtils;
 import org.logscanner.logger.StatisticsPrinter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
-import org.springframework.batch.repeat.RepeatContext;
-import org.springframework.batch.repeat.exception.ExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Victor Kadachigov
  */
+@Slf4j
 @Component
 @Scope("singleton")
 public class JobResultModel extends AbstractListModel<LogEvent> implements JobExecutionListener, ListSelectionListener //, ExceptionHandler
 {
 	private static final long serialVersionUID = 1L;
-	private static Logger log = LoggerFactory.getLogger(JobResultModel.class);
 
 	public static enum JobState
 	{
@@ -53,11 +49,15 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 	private AppProperties props;
 	
 	private CircularFifoQueue<LogEvent> queue;
+	@Getter
 	private JobState jobState = JobState.STOPPED;
 	private PropertyChangeSupport changeSupport;
+	@Getter
 	private LocalTime startTime;
+	@Getter
 	private LocalTime endTime;
 	private int selectedItemIndex;
+	@Getter
 	private Throwable error;
 	private AtomicInteger filesToProcess = new AtomicInteger();
 	private AtomicInteger processedFiles = new AtomicInteger();
@@ -193,30 +193,15 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 		setJobState(JobState.STOPPED);
 	}
 
-	public JobState getJobState() 
-	{
-		return jobState;
-	}
 	private void setJobState(JobState jobState) 
 	{
 		firePropertyChange("jobState", this.jobState, jobState);
 		this.jobState = jobState;
 	}
 
-	public LocalTime getStartTime() 
-	{
-		return startTime;
-	}
-
-	public LocalTime getEndTime() 
-	{
-		return endTime;
-	}
-
 	@Override
 	public void valueChanged(ListSelectionEvent event) 
 	{
-//		log.info("valueChanged({})", event);
 		selectedItemIndex = event.getFirstIndex();
 	}
 	
@@ -225,11 +210,6 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 		return (selectedItemIndex >= 0) ? queue.get(selectedItemIndex) : null;
 	}
 
-	public Throwable getError() 
-	{
-		return error;
-	}
-	
 	public boolean isSuccess()
 	{
 		return endTime != null && error == null;
@@ -265,4 +245,8 @@ public class JobResultModel extends AbstractListModel<LogEvent> implements JobEx
 		selectedFiles.incrementAndGet();
 	}
 	
+	public Collection<LogEvent> getEvents()
+	{
+		return queue;
+	}
 }

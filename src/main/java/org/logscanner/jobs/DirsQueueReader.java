@@ -10,7 +10,10 @@ import org.logscanner.data.FileInfo;
 import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemReader;
@@ -19,13 +22,14 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Victor Kadachigov
  */
-public class DirsQueueReader implements ItemReader<FileInfo> 
+@Slf4j
+public class DirsQueueReader implements ItemReader<FileInfo>, StepExecutionListener 
 {
-	private static Logger log = LoggerFactory.getLogger(DirsQueueReader.class);
-
 	@Autowired
 	private JobResultModel eventQueueHolder;
 
@@ -60,8 +64,16 @@ public class DirsQueueReader implements ItemReader<FileInfo>
 		return result;
 	}
 
-    @BeforeStep
-    public void setStepExecution(StepExecution stepExecution) 
+    @AfterStep
+	@Override
+	public ExitStatus afterStep(StepExecution stepExecution)
+	{
+		return null;
+	}
+
+	@BeforeStep
+	@Override
+	public void beforeStep(StepExecution stepExecution)
     {
         this.stepExecution = stepExecution;
         this.iterator = null;

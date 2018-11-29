@@ -38,19 +38,23 @@ import org.logscanner.service.JobResultModel;
 import org.logscanner.service.LogPatternDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * читаем файл в память, используем reset. используем ArchiveInputStream
  * @author Victor Kadachigov
  */
-public class FileContentProcessor2 implements ItemProcessor<FileInfo, FileData> 
+@Slf4j
+public class FileContentProcessor2 implements ItemProcessor<FileInfo, FileData>, StepExecutionListener
 {
-	private static Logger log = LoggerFactory.getLogger(FileContentProcessor2.class);
-
 	@Autowired
 	private JobResultModel resultModel;
 	@Autowired
@@ -244,8 +248,16 @@ public class FileContentProcessor2 implements ItemProcessor<FileInfo, FileData>
 		}
 	}
 
+    @AfterStep
+	@Override
+	public ExitStatus afterStep(StepExecution stepExecution)
+	{
+		return null;
+	}
+
 	@BeforeStep
-    public void setStepExecution(StepExecution stepExecution) 
+	@Override
+	public void beforeStep(StepExecution stepExecution)
     {
         this.stepExecution = stepExecution;
 		commonPrefix = stepExecution.getJobExecution().getExecutionContext().getString(AppConstants.PROP_COMMON_PATH);

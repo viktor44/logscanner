@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.logscanner.cache.Cache;
 import org.logscanner.cache.CacheFileInfo;
+import org.logscanner.jobs.LocationsReader;
 import org.logscanner.util.ServiceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +27,17 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.jgoodies.common.base.Objects;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Victor Kadachigov
  */
+@Slf4j
 @Service
 public class CacheManager 
 {
-	private static final Logger log = LoggerFactory.getLogger(CacheManager.class);
-
 	@Autowired
 	private AppProperties props;
 	@Autowired
@@ -53,26 +56,41 @@ public class CacheManager
 		});
 	}
 	
-	public CacheFileInfo getFileInfo(String locationCode, String path)
+	/**
+	 * @param locationCode
+	 * @param path
+	 * @param actualToDate <= getCacheUpdateTime
+	 * @return
+	 */
+	public CacheFileInfo getFileInfo(String locationCode, String path, Date actualToDate)
 	{
 		Cache cache = findCache(locationCode);
-		return getFileInfo(cache, locationCode, path);
+		return getFileInfo(cache, locationCode, path, actualToDate);
 	}
 
-	private CacheFileInfo getFileInfo(Cache cache, String locationCode, String path)
+	private CacheFileInfo getFileInfo(Cache cache, String locationCode, String path, Date actualToDate)
 	{
-		Optional<CacheFileInfo> fileInfo = Optional.empty();  
+		Optional<CacheFileInfo> result = Optional.empty();
+		Optional.empty();  
 		if (cache != null)
-			fileInfo = cache.getFiles().stream()
-							.filter(fi -> StringUtils.equals(fi.getPath(), path))
-							.findAny();
-		return fileInfo.isPresent() ? fileInfo.get() : null;
+		{
+			result = cache.getFiles().stream()
+								.filter(fi -> {
+//											if (StringUtils.contains(fi.getPath(), "cod99_calc.2018-08-10_0.log"))
+//												log.info("ZZZ {}", fi.getPath());
+											return StringUtils.equals(fi.getPath(), path)
+														&& (actualToDate == null || actualToDate.before(fi.getCacheUpdateTime()));
+									}
+								)
+								.findAny();
+		}
+		return result.isPresent() ? result.get() : null;
 	}
 
-	public void updateFromAttributes(String locationCode, String path, BasicFileAttributes attr)
+	public CacheFileInfo updateFromAttributes(String locationCode, String path, BasicFileAttributes attr)
 	{
 		Cache cache = findCache(locationCode);
-		CacheFileInfo fileInfo = getFileInfo(cache, locationCode, path);
+		CacheFileInfo fileInfo = getFileInfo(cache, locationCode, path, null);
 		if (fileInfo == null) 
 		{ 
 			fileInfo = new CacheFileInfo(path);
@@ -81,35 +99,42 @@ public class CacheManager
 		FileTime lastModifiedTime = attr.lastModifiedTime();
 		if (lastModifiedTime != null)
 		{
-			fileInfo.setLastModified(new Date(lastModifiedTime.toMillis()));
-			cache.changed();
+			Date newLastModifiedTime = new Date(lastModifiedTime.toMillis());
+			if (!Objects.equals(newLastModifiedTime, fileInfo.getLastModified()))
+			{
+				fileInfo.setLastModified(newLastModifiedTime);
+				fileInfo.setContentEnd(null);
+				cache.changed(fileInfo);
+			}
 		}
 		if (attr.size() >= 0)
 		{
 			fileInfo.setSize(attr.size());
-			cache.changed();
+			cache.changed(fileInfo);
 		}
+		return fileInfo;
 	}
 	
-	public void updateFromContent(String locationCode, String path, Date contentStart, Date contentEnd)
+	public CacheFileInfo updateFromContent(String locationCode, String path, Date contentStart, Date contentEnd)
 	{
 		Cache cache = findCache(locationCode);
-		CacheFileInfo fileInfo = getFileInfo(locationCode, path);
+		CacheFileInfo fileInfo = getFileInfo(locationCode, path, null);
 		if (fileInfo == null) 
 		{
 			fileInfo = new CacheFileInfo(path);
 			cache.addFile(fileInfo);
 		}
-		if (contentStart != null)
+		if (contentStart != null && !Objects.equals(contentStart, fileInfo.getContentStart()))
 		{
 			fileInfo.setContentStart(contentStart);
-			cache.changed();
+			cache.changed(fileInfo);
 		}
-		if (contentEnd != null)
+		if (contentEnd != null && !Objects.equals(contentEnd, fileInfo.getContentEnd()))
 		{
 			fileInfo.setContentEnd(contentEnd);
-			cache.changed();
+			cache.changed(fileInfo);
 		}
+		return fileInfo;
 	}
 	
 	private Cache findCache(String locationCode)

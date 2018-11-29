@@ -20,7 +20,7 @@ public class UriContentReader implements ContentReader
 	private final URI uri;
 	private final long size;
 	
-	private transient BufferedInputStream inputStream;
+	private transient InputStream inputStream;
 	
 	public UriContentReader(URI uri, long size)
 	{
@@ -31,7 +31,7 @@ public class UriContentReader implements ContentReader
 	@Override
 	public InputStream getInputStream() throws IOException
 	{
-		int bufferSize = Math.min((int)size, DEFAULT_BUFFER_SIZE);
+		int bufferSize = Math.max(Math.min((int)size, DEFAULT_BUFFER_SIZE), 8192);
 		if (inputStream != null)
 		{
 			// check if closed
@@ -47,6 +47,7 @@ public class UriContentReader implements ContentReader
 		}
 		if (inputStream == null)
 		{
+//			inputStream = Files.newInputStream(Paths.get(uri)); // we shoud ckeck if BufferedInputStream is necessary
 			inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(uri)), bufferSize);
 			inputStream.mark(bufferSize + 1);
 		}

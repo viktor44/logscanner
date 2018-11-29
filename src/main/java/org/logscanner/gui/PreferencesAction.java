@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.annotation.PostConstruct;
 
 import org.logscanner.common.gui.BaseAction;
+import org.logscanner.jobs.CopyFilesWriter;
 import org.logscanner.service.AppProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,14 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Victor Kadachigov
  */
+@Slf4j
 @Component
 public class PreferencesAction extends BaseAction 
 {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = LoggerFactory.getLogger(PreferencesAction.class);
 
 	@Autowired
 	private AppProperties props;

@@ -20,18 +20,22 @@ import org.logscanner.service.JobResultModel;
 import org.logscanner.service.LogPatternDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Victor Kadachigov
  */
-public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
+@Slf4j
+public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>, StepExecutionListener
 {
-	private static final Logger log = LoggerFactory.getLogger(DirectoryFilesProcessor.class);
-	
 	@Autowired
 	private LogPatternDao patternDao;
 	@Autowired
@@ -54,9 +58,17 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 		filterParams.setDateFrom(dateFrom);
 		filterParams.setDateTo(dateTo);
 		FileSystemService fileSystemService = fileServiceSelector.select(location.getType());
-		List<FileInfo> list = fileSystemService.listFiles(location, filterParams); 
-		
-		log.info("{} {} {} files selected", location.getCode(), location.getPath(), list.size());
+		List<FileInfo> list = Collections.emptyList(); 
+		try
+		{
+			list = fileSystemService.listFiles(location, filterParams); 
+			log.info("{} {} {} files selected", location.getCode(), location.getPath(), list.size());
+		}
+		catch (IllegalStateException ex)
+		{
+			// basedir not fund, access denied
+			log.info("{} {} error: {}", location.getCode(), location.getPath(), ex.getMessage());
+		}
 		
 		if (!list.isEmpty())
 		{
@@ -68,12 +80,6 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 			result.setHost(location.getHost());
 			result.setRootPath(location.getPath());
 			result.setFiles(list);
-			
-//			for (FileInfo fi : list)
-//			{
-//				if (!Objects.equals(fi.getHost(), result.getHost()))
-//					throw new RuntimeException("Not equals " + fi.getHost() + " " + result.getLocationCode());
-//			}
 		}
 		
 		return result;
@@ -90,8 +96,16 @@ public class DirectoryFilesProcessor implements ItemProcessor<Location, DirInfo>
 		}
 	}
 
-    @BeforeStep
-    public void setStepExecution(StepExecution stepExecution) 
+    @AfterStep
+	@Override
+	public ExitStatus afterStep(StepExecution stepExecution)
+	{
+		return null;
+	}
+
+	@BeforeStep
+	@Override
+	public void beforeStep(StepExecution stepExecution)
     {
         this.stepExecution = stepExecution;
         this.pattern = patternDao.getByCode(stepExecution.getJobParameters().getString(AppConstants.JOB_PARAM_PATTERN_CODE));

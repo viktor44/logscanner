@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class LocalFileService extends BaseFileService
 {
-	private static final Logger log = LoggerFactory.getLogger(LocalFileService.class);
-	
 	@Override
 	public String getRelativePath(FileInfo file, String basePath)
 	{
@@ -64,10 +62,7 @@ public class LocalFileService extends BaseFileService
 		List<FileInfo> list = new ArrayList<>();
 		String includedFiles[] = dirScanner.getIncludedFiles();
 		Arrays.stream(includedFiles)
-				.forEach(path -> {
-						LocalFileInfo fileInfo = new LocalFileInfo(location.getCode(), Paths.get(location.getPath(), path));
-						list.add(fillAttributes(fileInfo));
-				});
+				.forEach(path -> list.add(new LocalFileInfo(location.getCode(), Paths.get(location.getPath(), path))));
 		return list;
 	}
 }

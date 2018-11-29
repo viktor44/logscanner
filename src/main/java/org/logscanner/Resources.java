@@ -21,6 +21,7 @@ public class Resources extends ListResourceBundle
 										{"image.locations.16",		"/images/set1/Open_16x16.png"},
 										{"image.exit.16",			"/images/set1/Log Out_16x16.png"},
 										{"image.open.16",			"/images/set1/Open_16x16.png"},
+										{"image.excel.16",			"/images/set1/Excel_16x16.png"},
 								};
 	
 	private static ResourceBundle getInstance()
@@ -35,7 +36,7 @@ public class Resources extends ListResourceBundle
 	{
 		String result = getInstance().getString(key);
 		if (args.length > 0)
-			result = MessageFormat.format(result, args);
+			result = MessageFormat.format(result, args[0]);
 		return result;
 	}
 	
@@ -53,18 +54,18 @@ public class Resources extends ListResourceBundle
 						{"error.cant_start",				"Application start error"},
 						{"error.unsupported_location_type",	"Unsupported location type {0}"},
 						{"error.code_is_empty",				"Empty code"},
-						{"error.code_already_used",			"Code '{0}' already used"},
+						{"error.code_already_used",			"Code \"{0}\" already used"},
 						{"error.context_is_null",			"Spring context is null"},
 						{"dialog.title.error",				"Error"},
 						{"dialog.title.warning",			"Warning"},
 						{"dialog.title.info",				"Information"},
 						{"dialog.title.confirm",			"Confirm"},
 						
-						
 //Images					
 						{"image.select_locations.16", 		loadIcon("image.locations.16")},
 						{"image.exit.16",					loadIcon("image.exit.16")},
-						{"image.save_to.16",				loadIcon("image.open.16")}
+						{"image.save_to.16",				loadIcon("image.open.16")},
+						{"image.excel.16",					loadIcon("image.excel.16")}
 						
         		};
 	}

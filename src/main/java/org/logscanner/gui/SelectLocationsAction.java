@@ -22,8 +22,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SelectLocationsAction extends BaseAction 
 {
-	private static Logger log = LoggerFactory.getLogger(SelectLocationsAction.class);
-
 	@Autowired
 	private SearchModel searchModel;
 	@Autowired

@@ -1,12 +1,14 @@
 package org.logscanner.util.fs;
 
 import java.io.File;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
@@ -280,12 +282,6 @@ public class LocalDirectoryScanner {
     protected boolean isCaseSensitive = true;
 
     /**
-     * Whether a missing base directory is an error.
-     * @since Ant 1.7.1
-     */
-    protected boolean errorOnMissingDir = true;
-
-    /**
      * Whether or not symbolic links should be followed.
      *
      * @since Ant 1.5
@@ -406,6 +402,8 @@ public class LocalDirectoryScanner {
      * @since Ant 1.8.0
      */
     private int maxLevelsOfSymlinks = MAX_LEVELS_OF_SYMLINKS;
+    
+    private ScannerErrorHandler errorHandler = ScannerErrorHandler.NOOP_ERROR_HANDLER;
 
 
     /**
@@ -631,17 +629,6 @@ public class LocalDirectoryScanner {
     }
 
     /**
-     * Sets whether or not a missing base directory is an error
-     *
-     * @param errorOnMissingDir whether or not a missing base directory
-     *                        is an error
-     * @since Ant 1.7.1
-     */
-    public void setErrorOnMissingDir(final boolean errorOnMissingDir) {
-        this.errorOnMissingDir = errorOnMissingDir;
-    }
-
-    /**
      * Get whether or not a DirectoryScanner follows symbolic links.
      *
      * @return flag indicating whether symbolic links should be followed.
@@ -837,18 +824,9 @@ public class LocalDirectoryScanner {
                     }
                 } else {
                     if (Files.notExists(basedir)) {
-                        if (errorOnMissingDir) {
-                            illegal = new IllegalStateException("basedir "
-                                                                + basedir
-                                                                + DOES_NOT_EXIST_POSTFIX);
-                        } else {
-                            // Nothing to do - basedir does not exist
-                            return;
-                        }
+                        illegal = new IllegalStateException("basedir " + basedir + DOES_NOT_EXIST_POSTFIX);
                     } else if (!Files.isDirectory(basedir)) {
-                        illegal = new IllegalStateException("basedir "
-                                                            + basedir
-                                                            + " is not a directory.");
+                        illegal = new IllegalStateException("basedir " + basedir + " is not a directory.");
                     }
                     if (illegal != null) {
                         throw illegal;
@@ -914,7 +892,7 @@ public class LocalDirectoryScanner {
 //                    canonBase = basedir.getCanonicalFile();
                     canonBase = basedir.toRealPath();
                 } catch (final IOException ex) {
-                    throw new BuildException(ex);
+               		throw new BuildException(ex);
                 }
             }
             // only scan directories that can include matched files or
@@ -944,7 +922,7 @@ public class LocalDirectoryScanner {
                             }
                         }
                     } catch (final IOException ex) {
-                        throw new BuildException(ex);
+                   		throw new BuildException(ex);
                     }
                 }
 
@@ -1840,5 +1818,9 @@ public class LocalDirectoryScanner {
 
 	public Path getBasedir() {
 		return basedir;
+	}
+
+	public void setErrorHandler(ScannerErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
 	}
 }

@@ -1,5 +1,6 @@
 package org.logscanner.data;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,12 +10,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author Victor Kadachigov
  */
+@Getter
+@Setter
+@EqualsAndHashCode(doNotUseGetters=true, onlyExplicitlyIncluded=true)
 @JsonInclude(Include.NON_NULL)
 public class Location implements Named
 {
+	@EqualsAndHashCode.Include
 	private String code;
 	private String path;
 	private String description;
@@ -31,26 +40,6 @@ public class Location implements Named
 		this();
 		this.code = code;
 		this.path = path;
-		this.description = description;
-	}
-
-	@Override
-	public String getCode() {
-		return code;
-	}
-	public void setCode(String code) {
-		this.code = code;
-	}
-	public String getPath() {
-		return path;
-	}
-	public void setPath(String path) {
-		this.path = path;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -78,62 +67,7 @@ public class Location implements Named
 	}
 	
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((code == null) ? 0 : code.hashCode());
-		return result;
-	}
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Location other = (Location) obj;
-		if (code == null) {
-			if (other.code != null)
-				return false;
-		} else if (!code.equals(other.code))
-			return false;
-		return true;
-	}
-	
-	@Override
 	public String toString() {
 		return code + ": " + getName();
-	}
-	
-	public String getHost() {
-		return host;
-	}
-	public void setHost(String host) {
-		this.host = host;
-	}
-	public String getUser() {
-		return user;
-	}
-	public void setUser(String user) {
-		this.user = user;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public Integer getPort() {
-		return port;
-	}
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-	public LocationType getType() {
-		return type;
-	}
-	public void setType(LocationType type) {
-		this.type = type;
 	}
 }

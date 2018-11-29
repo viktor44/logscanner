@@ -26,8 +26,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class StatusBarPanel extends JPanel
 {
-	private static Logger log = LoggerFactory.getLogger(StatusBarPanel.class);
-
 	@Autowired
 	private JobResultModel resultModel;
 	@Autowired

@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.logscanner.data.Location;
 import org.logscanner.data.LocationGroup;
 import org.logscanner.data.LogPattern;
+import org.logscanner.jobs.LocationsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -30,41 +31,57 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
 /**
  * @author Victor Kadachigov
  */
+@Slf4j
 @Component
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, isGetterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
 public class AppProperties 
 {
-	private static final Logger log = LoggerFactory.getLogger(AppProperties.class);
-
 	@JsonIgnore
 	@Autowired
 	private ObjectMapper mapper;
+	@Getter
 	@JsonIgnore
 	@Value("${version}")
 	private String version;
+	@Getter
 	@JsonIgnore
 	private Path preferencesDir;
+	@Getter
 	@JsonIgnore
 	private Path locationsFile;
+	@Getter
 	@JsonIgnore
 	private Path settingsFile;
+	@Getter
 	@JsonIgnore
 	private Path patternsFile;
 	@JsonIgnore
 	private FileTime settingsFileChangeTime;
 
 	private int settingsVersion = 1;
-	private int maxResults = 100000;
+	@Getter
+	private int maxResults = 10000;
+	@Getter
+	@Setter
 	private String defaultPatternCode;
+	@Getter
+	@Setter
 	private String defaultDir;
+	@Getter
+	@Setter
 	private Boolean defaultSaveToFile;
+	@Getter
 	private String locale = "en";
+	@Getter
 	private String dataDir;
 	
 	@PostConstruct
@@ -181,67 +198,5 @@ public class AppProperties
 		locale = p.locale;
 		if (StringUtils.isNotBlank(p.dataDir))
 			dataDir = p.dataDir; 
-	}
-
-	public Path getPreferencesDir()
-	{
-		return preferencesDir;
-	}
-	
-	public Path getLocationsFile() 
-	{
-		return locationsFile;
-	}
-	
-	public String getVersion()
-	{
-		return version;
-	}
-
-	public int getMaxResults()
-	{
-		return maxResults;
-	}
-	
-	public Path getPatternsFile()
-	{
-		return patternsFile;
-	}
-
-	public String getDefaultPatternCode()
-	{
-		return defaultPatternCode;
-	}
-	public void setDefaultPatternCode(String defaultPatterCode)
-	{
-		this.defaultPatternCode = defaultPatterCode;
-	}
-
-	public String getDefaultDir()
-	{
-		return defaultDir;
-	}
-	public void setDefaultDir(String defaultDir)
-	{
-		this.defaultDir = defaultDir;
-	}
-
-	public Boolean getDefaultSaveToFile()
-	{
-		return defaultSaveToFile;
-	}
-	public void setDefaultSaveToFile(Boolean defaultSaveToFile)
-	{
-		this.defaultSaveToFile = defaultSaveToFile;
-	}
-
-	public String getLocale()
-	{
-		return locale;
-	}
-
-	public String getDataDir()
-	{
-		return dataDir;
 	}
 }

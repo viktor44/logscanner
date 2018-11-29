@@ -19,32 +19,39 @@ import org.logscanner.Resources;
 import org.logscanner.data.FileData;
 import org.logscanner.logger.Logged;
 import org.logscanner.logger.Logged.Level;
+import org.logscanner.service.SearchModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.support.AbstractItemStreamItemWriter;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * using commons-compress
  * @author Victor Kadachigov
  */
-public class PackFilesWriter3 extends AbstractItemStreamItemWriter<FileData>
+@Slf4j
+public class PackFilesWriter3 extends AbstractItemStreamItemWriter<FileData> implements StepExecutionListener
 {
-	private static Logger log = LoggerFactory.getLogger(PackFilesWriter3.class);
-
-	
 	private StepExecution stepExecution;
 	private ParallelScatterZipCreator zipCreator;
 	private ZipArchiveOutputStream outputStream;
 	private Set<String> files;
+	private boolean skipStep;
 
 	@Override
 	@Logged(level = Level.DEBUG)
 	public void write(List<? extends FileData> items) throws Exception 
 	{
+		if (skipStep) return;
+		
 		for (FileData fileData : items)
 		{
 			String zipPath = fileData.getZipPath();
@@ -95,25 +102,20 @@ public class PackFilesWriter3 extends AbstractItemStreamItemWriter<FileData>
 		if (!isInitialized()) 
 		{
 			files = new ConcurrentSkipListSet<>();
-			if (stepExecution.getJobParameters().getLong(AppConstants.JOB_PARAM_SAVE_TO_ARCHIVE) == 1L)
-			{
-				String resultFile = stepExecution.getJobParameters().getString(AppConstants.JOB_PARAM_OUTPUT_ARCHIVE_NAME);
-				File file = new File(resultFile);
+			String resultFile = stepExecution.getJobParameters().getString(AppConstants.JOB_PARAM_OUTPUT_ARCHIVE_NAME);
+			File file = new File(resultFile);
 
-				log.info("Result file {}", file.getAbsolutePath());
-				
-				try 
-				{
-					zipCreator = new ParallelScatterZipCreator();
-					outputStream = new ZipArchiveOutputStream(file);
-				} 
-				catch (IOException ex) 
-				{
-					throw new ItemStreamException(ex.getMessage(), ex);
-				}
+			log.info("Result file {}", file.getAbsolutePath());
+			
+			try 
+			{
+				zipCreator = new ParallelScatterZipCreator();
+				outputStream = new ZipArchiveOutputStream(file);
+			} 
+			catch (IOException ex) 
+			{
+				throw new ItemStreamException(ex.getMessage(), ex);
 			}
-			else
-				throw new NotImplementedException(Resources.getStr("error.not_implemented"));
 		}
 	}
 
@@ -122,7 +124,7 @@ public class PackFilesWriter3 extends AbstractItemStreamItemWriter<FileData>
 	{
 		try 
 		{
-			if (isInitialized())
+			if (outputStream != null)
 				outputStream.close();
 		} 
 		catch (IOException ex) 
@@ -139,12 +141,21 @@ public class PackFilesWriter3 extends AbstractItemStreamItemWriter<FileData>
 
     private boolean isInitialized() 
     {
-		return outputStream != null;
+		return skipStep || outputStream != null;
+	}
+
+    @AfterStep
+	@Override
+	public ExitStatus afterStep(StepExecution stepExecution)
+	{
+		return null;
 	}
 
 	@BeforeStep
-    public void setStepExecution(StepExecution stepExecution) 
-    {
+	@Override
+	public void beforeStep(StepExecution stepExecution)
+	{
         this.stepExecution = stepExecution;
-    }
+        this.skipStep = stepExecution.getJobParameters().getLong(AppConstants.JOB_PARAM_SAVE_TO_ARCHIVE) != SearchModel.SAVE_TYPE_FILE;
+	}
 }

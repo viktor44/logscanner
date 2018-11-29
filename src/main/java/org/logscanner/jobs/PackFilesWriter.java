@@ -19,20 +19,24 @@ import org.logscanner.logger.Logged;
 import org.logscanner.logger.Logged.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.support.AbstractItemStreamItemWriter;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * using ZipOutputStream
  * @author Victor Kadachigov
  */
-public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
+@Slf4j
+public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData> implements StepExecutionListener
 {
-	private static Logger log = LoggerFactory.getLogger(PackFilesWriter.class);
-
 	private StepExecution stepExecution;
 	private ZipOutputStream outputStream;
 	private Set<String> files;
@@ -112,9 +116,17 @@ public class PackFilesWriter extends AbstractItemStreamItemWriter<FileData>
 		return outputStream != null;
 	}
 
+    @AfterStep
+	@Override
+	public ExitStatus afterStep(StepExecution stepExecution)
+	{
+		return null;
+	}
+
 	@BeforeStep
-    public void setStepExecution(StepExecution stepExecution) 
-    {
+	@Override
+	public void beforeStep(StepExecution stepExecution)
+	{
         this.stepExecution = stepExecution;
-    }
+	}
 }

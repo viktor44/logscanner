@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class SFTPFileService extends BaseFileService
 {
-	private static final Logger log = LoggerFactory.getLogger(SFTPFileService.class);
 	private static final int DEFAULT_PORT = 22;
 	
 	@Override
@@ -61,10 +60,7 @@ public class SFTPFileService extends BaseFileService
 		List<FileInfo> list = new ArrayList<>();
 		String includedFiles[] = dirScanner.getIncludedFiles();
 		Arrays.stream(includedFiles)
-				.forEach(path -> {
-						SFTPFileInfo fileInfo = new SFTPFileInfo(location.getCode(), location.getHost(), basedir.resolve(path));
-						list.add(fillAttributes(fileInfo));	
-				});
+				.forEach(path -> list.add(new SFTPFileInfo(location.getCode(), location.getHost(), basedir.resolve(path))));
 		return list;
 	}
 }

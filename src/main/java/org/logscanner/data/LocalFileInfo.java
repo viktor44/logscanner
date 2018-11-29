@@ -16,8 +16,6 @@ public class LocalFileInfo implements FileInfo
 {
 	private final String locationCode;
 	private final transient Path file;
-//	private Date lastModified;
-//	private Date created;
 	
 	
 	public LocalFileInfo(String locationCode, Path file)
@@ -62,26 +60,4 @@ public class LocalFileInfo implements FileInfo
 		builder.append("]");
 		return builder.toString();
 	}
-
-//	@Override
-//	public Date getLastModified()
-//	{
-//		return lastModified;
-//	}
-//
-//	public void setLastModified(Date lastModified)
-//	{
-//		this.lastModified = lastModified;
-//	}
-//
-//	@Override
-//	public Date getCreated()
-//	{
-//		return created;
-//	}
-//
-//	public void setCreated(Date created)
-//	{
-//		this.created = created;
-//	}
 }

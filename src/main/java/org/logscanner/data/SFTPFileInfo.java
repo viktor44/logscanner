@@ -9,11 +9,14 @@ import java.util.Date;
 
 import org.apache.commons.lang3.NotImplementedException;
 
+import lombok.Getter;
+
 /**
  * @author Victor Kadachigov
  */
 public class SFTPFileInfo extends LocalFileInfo
 {
+	@Getter
 	private final String host;
 	
 	public SFTPFileInfo(String locationCode, String host, Path path)
@@ -27,11 +30,4 @@ public class SFTPFileInfo extends LocalFileInfo
 	{
 		return LocationType.SFTP;
 	}
-
-	@Override
-	public String getHost()
-	{
-		return host;
-	}
-
 }

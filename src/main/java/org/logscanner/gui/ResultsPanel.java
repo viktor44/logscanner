@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToolBar;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
@@ -24,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.logscanner.common.gui.LeftDotRenderer;
 import org.logscanner.common.gui.MessageBox;
 import org.logscanner.data.LogEvent;
+import org.logscanner.jobs.CopyFilesWriter;
 import org.logscanner.logger.LogUtils;
 import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
@@ -32,14 +34,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Victor Kadachigov
  */
+@Slf4j
 @Component
 public class ResultsPanel extends JPanel 
 {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = LoggerFactory.getLogger(ResultsPanel.class);
 	
 	@Autowired
 	private JobResultModel resultModel;
@@ -47,6 +51,8 @@ public class ResultsPanel extends JPanel
 	private CopyTextAction copyTextAction;
 	@Autowired
 	private OpenLogFileAction openLogFileAction;
+	@Autowired
+	private ExportAction exportAction;
 	@Autowired
 	private MessageSourceAccessor messageAccessor;
 	
@@ -61,6 +67,8 @@ public class ResultsPanel extends JPanel
 	public void init()
 	{
 		setLayout(new BorderLayout());
+		
+		add(createToolBar(), BorderLayout.NORTH);
 		
 		resultsTableModel = new ResultsTableModel();
 		JTable table = new JTable(resultsTableModel)
@@ -142,6 +150,16 @@ public class ResultsPanel extends JPanel
 		);
 	}
 	
+	private JToolBar createToolBar()
+	{		
+		JToolBar toolBar = new JToolBar();
+		toolBar.setFloatable(false);
+		toolBar.setRollover(true);
+
+		toolBar.add(GuiHelper.createToolBarButton(exportAction));
+
+		return toolBar;
+	}
 	
 //	public static void main(String[] args)
 //	{

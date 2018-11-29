@@ -17,11 +17,13 @@ import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -32,6 +34,7 @@ import org.logscanner.common.gui.datepicker.DatePickerSettings;
 import org.logscanner.common.gui.datepicker.DateTimePicker;
 import org.logscanner.common.gui.datepicker.TimePickerSettings;
 import org.logscanner.data.LocationGroup;
+import org.logscanner.jobs.CopyFilesWriter;
 import org.logscanner.service.AppProperties;
 import org.logscanner.service.JobResultModel;
 import org.logscanner.service.LocationDao;
@@ -46,8 +49,13 @@ import org.springframework.stereotype.Component;
 
 import com.jgoodies.binding.adapter.BasicComponentFactory;
 import com.jgoodies.binding.adapter.Bindings;
+import com.jgoodies.binding.adapter.RadioButtonAdapter;
 import com.jgoodies.binding.beans.BeanAdapter;
+import com.jgoodies.binding.beans.PropertyAdapter;
+import com.jgoodies.binding.value.ValueHolder;
 import com.jgoodies.binding.value.ValueModel;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Victor Kadachigov
@@ -56,7 +64,6 @@ import com.jgoodies.binding.value.ValueModel;
 public class SearchPanel extends JPanel 
 {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = LoggerFactory.getLogger(SearchPanel.class);
 	private static final int HPAD = 5; 
 	private static final int VPAD = 5; 
 
@@ -65,7 +72,9 @@ public class SearchPanel extends JPanel
 	@Autowired
 	private JobResultModel resultModel;
 	@Autowired
-	private SelectSaveToAction selectSaveToAction;
+	private SelectSaveToFileAction selectSaveToFileAction;
+	@Autowired
+	private SelectSaveToFolderAction selectSaveToFolderAction;
 	@Autowired
 	private SearchAction searchStartAction;
 	@Autowired
@@ -79,7 +88,10 @@ public class SearchPanel extends JPanel
 	private DateTimePicker toPicker;
 	private JTextField locationsText;
 	private JCheckBox saveToCheck;
-	private JTextField saveToText;
+	private JRadioButton saveTypeRadioButton1; 
+	private JRadioButton saveTypeRadioButton2;
+	private JTextField saveToFileText;
+	private JTextField saveToFolderText;
 	private JTextField searchText;
 	private BeanAdapter<SearchModel> beanAdapter;
 
@@ -164,8 +176,10 @@ public class SearchPanel extends JPanel
 						.findFirst();
 			if (op.isPresent())
 				patternCombo.setSelectedItem(op.get());
+			else
+				searchModel.setPatternCode(null);
 		}
-		else
+		if (searchModel.getPatternCode() == null)
 		{
 			patternCombo.setSelectedIndex(0);
 			searchModel.setPatternCode(patterns.get(0).getValue());
@@ -177,22 +191,53 @@ public class SearchPanel extends JPanel
 		panel1.add(Box.createRigidArea(new Dimension(0, VPAD)));
 		
 		final Box box3 = Box.createHorizontalBox();
-		ValueModel saveToFileCheckAdapter = beanAdapter.getValueModel("saveToFile");
+		ValueModel saveToFileCheckAdapter = beanAdapter.getValueModel("saveResults");
 		saveToCheck = BasicComponentFactory.createCheckBox(saveToFileCheckAdapter, null);
 		saveToCheck.addItemListener(
-				(ItemEvent event) -> 
-				{
-					enableSaveToFileElements(event.getStateChange() == ItemEvent.SELECTED);
+				(ItemEvent event) -> {
+					enableSaveToFileElements();
 				}
 		);
 		saveToCheck.setText(messageAccessor.getMessage("search_panel.text.result"));
 		box3.add(saveToCheck);
+
+		ValueModel saveTypeRadioButtonAdapter = beanAdapter.getValueModel("saveType");
+		saveTypeRadioButton1 = BasicComponentFactory.createRadioButton(
+													saveTypeRadioButtonAdapter, 
+													SearchModel.SAVE_TYPE_FILE, 
+													messageAccessor.getMessage("search_panel.text.to_file")
+											);
+		saveTypeRadioButton1.addItemListener(
+				(ItemEvent event) -> {
+					enableSaveToFileElements();
+				}
+		);
+		saveTypeRadioButton2 = BasicComponentFactory.createRadioButton(
+													saveTypeRadioButtonAdapter, 
+													SearchModel.SAVE_TYPE_FOLDER, 
+													messageAccessor.getMessage("search_panel.text.to_folder")
+											);
+		saveTypeRadioButton2.addItemListener(
+				(ItemEvent event) -> {
+					enableSaveToFileElements();
+				}
+		);
+		box3.add(saveTypeRadioButton1);
+		
+		ValueModel saveToFileTextAdapter = beanAdapter.getValueModel("resultFile");
+		saveToFileText = BasicComponentFactory.createTextField(saveToFileTextAdapter, false);
+		box3.add(saveToFileText);
 		box3.add(Box.createRigidArea(new Dimension(HPAD, 0)));
-		ValueModel saveToFileTextAdapter = beanAdapter.getValueModel("resultPath");
-		saveToText = BasicComponentFactory.createTextField(saveToFileTextAdapter, false);
-		box3.add(saveToText);
+		box3.add(GuiHelper.createToolBarButton(selectSaveToFileAction));
 		box3.add(Box.createRigidArea(new Dimension(HPAD, 0)));
-		box3.add(GuiHelper.createToolBarButton(selectSaveToAction));
+		
+		box3.add(saveTypeRadioButton2);
+		ValueModel saveToFolderTextAdapter = beanAdapter.getValueModel("resultFolder");
+		saveToFolderText = BasicComponentFactory.createTextField(saveToFolderTextAdapter, false);
+		box3.add(saveToFolderText);
+		box3.add(Box.createRigidArea(new Dimension(HPAD, 0)));
+		box3.add(GuiHelper.createToolBarButton(selectSaveToFolderAction));
+		
 		box3.add(Box.createHorizontalGlue());
 		panel1.add(box3);
 		panel1.add(Box.createRigidArea(new Dimension(0, VPAD)));
@@ -245,7 +290,7 @@ public class SearchPanel extends JPanel
 		
 		add(box5, BorderLayout.SOUTH);
 		
-		enableSaveToFileElements(searchModel.isSaveToFile());
+		enableSaveToFileElements();
 	}
 	
 	private List<ListItem<String>> createPatternsList()
@@ -257,10 +302,17 @@ public class SearchPanel extends JPanel
 		return result;
 	}
 	
-	private void enableSaveToFileElements(boolean enable)
+	private void enableSaveToFileElements()
 	{
-		saveToText.setEnabled(enable);
-		selectSaveToAction.setEnabled(enable);
+		boolean enable = searchModel.isSaveResults();
+		boolean enable1 = enable && searchModel.getSaveType() == SearchModel.SAVE_TYPE_FILE;
+		boolean enable2 = enable && searchModel.getSaveType() == SearchModel.SAVE_TYPE_FOLDER;
+		saveTypeRadioButton1.setEnabled(enable);
+		saveTypeRadioButton2.setEnabled(enable);
+		saveToFileText.setEnabled(enable1);
+		selectSaveToFileAction.setEnabled(enable1);
+		saveToFolderText.setEnabled(enable2);
+		selectSaveToFolderAction.setEnabled(enable2);
 	}
 	
 	private JPanel createStringsSearchPanel()

@@ -10,7 +10,10 @@ import org.logscanner.data.DirInfo;
 import org.logscanner.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
@@ -18,10 +21,8 @@ import org.springframework.batch.item.ItemWriter;
 /**
  * @author Victor Kadachigov
  */
-public class DirsQueueWriter implements ItemWriter<DirInfo> 
+public class DirsQueueWriter implements ItemWriter<DirInfo>, StepExecutionListener
 {
-	private static Logger log = LoggerFactory.getLogger(DirsQueueWriter.class);
-
 	private StepExecution stepExecution;
 
 	@Override
@@ -49,8 +50,16 @@ public class DirsQueueWriter implements ItemWriter<DirInfo>
         }
 	}
 
-    @BeforeStep
-    public void setStepExecution(StepExecution stepExecution) 
+    @AfterStep
+	@Override
+	public ExitStatus afterStep(StepExecution stepExecution)
+	{
+		return null;
+	}
+
+	@BeforeStep
+	@Override
+	public void beforeStep(StepExecution stepExecution)
     {
         this.stepExecution = stepExecution;
     }

@@ -21,6 +21,10 @@ public class AppConstants
 	 */
 	public static final String JOB_PARAM_OUTPUT_ARCHIVE_NAME = "OutputArchiveName";
 	/**
+	 * Имя папки с логами
+	 */
+	public static final String JOB_PARAM_OUTPUT_FOLDER_NAME = "OutputFolderName";
+	/**
 	 * Кодировка файлов с логами
 	 */
 	public static final String JOB_PARAM_ENCODING = "Encoding";

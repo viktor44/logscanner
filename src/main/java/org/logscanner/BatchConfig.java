@@ -1,6 +1,10 @@
 package org.logscanner;
 
 import org.logscanner.jobs.LocationsReader;
+
+import java.util.Arrays;
+
+import org.logscanner.jobs.CopyFilesWriter;
 import org.logscanner.jobs.DirectoryFilesProcessor;
 import org.logscanner.jobs.DirsQueueReader;
 import org.logscanner.jobs.DirsQueueWriter;
@@ -11,6 +15,7 @@ import org.logscanner.jobs.LogWriter;
 import org.logscanner.jobs.PackFilesWriter;
 import org.logscanner.jobs.PackFilesWriter2;
 import org.logscanner.jobs.PackFilesWriter3;
+import org.logscanner.jobs.ResultFilesWriter;
 import org.logscanner.service.AppProperties;
 import org.logscanner.service.JobResultModel;
 import org.springframework.batch.core.Job;
@@ -30,6 +35,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -52,13 +58,8 @@ public class BatchConfig extends DefaultBatchConfigurer
 	@Autowired
 	private StepBuilderFactory steps;
 	
-	public AppProperties appProperties()
-	{
-		return new AppProperties();
-	}
-
 	@Bean
-	public Job job(
+	Job job(
 					@Qualifier("readDirectoriesStep") Step step1,
 					@Qualifier("copyFilesStep") Step step2,
 					JobResultModel resultModel
@@ -74,7 +75,7 @@ public class BatchConfig extends DefaultBatchConfigurer
 	}
 	
 	@Bean
-	protected Step readDirectoriesStep(
+	Step readDirectoriesStep(
 						@Qualifier("locationsReader") ItemReader<? extends Object> reader,
 						@Qualifier("directoryFilesProcessor") ItemProcessor<? super Object, ? extends Object> processor,
 						@Qualifier("dirsQueueWriter") ItemWriter<? super Object> writer,
@@ -95,25 +96,25 @@ public class BatchConfig extends DefaultBatchConfigurer
 	}
 
 	@Bean
-	protected ItemWriter<? extends Object> logWriter() 
+	ItemWriter<? extends Object> logWriter() 
 	{
 		return new LogWriter();
 	}
 
 	@Bean
-	protected ItemWriter<? extends Object> dirsQueueWriter() 
+	ItemWriter<? extends Object> dirsQueueWriter() 
 	{
 		return new DirsQueueWriter();
 	}
 
 	@Bean
-	protected ItemProcessor<? extends Object, ? extends Object> directoryFilesProcessor() 
+	ItemProcessor<? extends Object, ? extends Object> directoryFilesProcessor() 
 	{
 		return new DirectoryFilesProcessor();
 	}
 	
 	@Bean
-	protected ItemReader<? extends Object> locationsReader()
+	ItemReader<? extends Object> locationsReader()
 	{
 		return new LocationsReader();
 	}
@@ -133,16 +134,18 @@ public class BatchConfig extends DefaultBatchConfigurer
 	}
 
 	@Bean
-	protected Step copyFilesStep(
+	Step copyFilesStep(
 						@Qualifier("dirsQueueReader") ItemReader<? extends Object> reader,
 						@Qualifier("fileContentProcessor") ItemProcessor<? super Object, ? extends Object> processor,
-						@Qualifier("packFilesWriter") ItemWriter<? super Object> writer,
+						@Qualifier("packFilesWriter") ItemWriter<? super Object> packWriter,
+						@Qualifier("copyFilesWriter") ItemWriter<? super Object> copyWriter,
 						@Qualifier("copyFilesTaskExecutor") TaskExecutor taskExecutor
 					)
 	{
 		ExecutionContextPromotionListener promotionListener = new ExecutionContextPromotionListener();
 		promotionListener.setKeys(new String[] { AppConstants.PROP_DIRS_INFO, AppConstants.PROP_COMMON_PATH });
 
+		ResultFilesWriter<? super Object> writer = new ResultFilesWriter<>(Arrays.asList(packWriter, copyWriter));
 		return steps.get("copyFilesStep")
 						.chunk(1)
 						.reader(reader)
@@ -154,13 +157,19 @@ public class BatchConfig extends DefaultBatchConfigurer
 	}
 	
 	@Bean
-	protected ItemWriter<? extends Object> packFilesWriter()
+	ItemWriter<? extends Object> packFilesWriter()
 	{
 		return new PackFilesWriter3();
 	}
 	
 	@Bean
-	protected ItemProcessor<? extends Object, ? extends Object> fileContentProcessor() 
+	ItemWriter<? extends Object> copyFilesWriter()
+	{
+		return new CopyFilesWriter();
+	}
+	
+	@Bean
+	ItemProcessor<? extends Object, ? extends Object> fileContentProcessor() 
 	{
 		return new FileContentProcessor();
 	}
@@ -213,7 +222,7 @@ public class BatchConfig extends DefaultBatchConfigurer
 	}
 
 	@Bean
-	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
+	SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
 			ListableJobLocator jobRegistry, JobRepository jobRepository) 
 	{
 		SimpleJobOperator factory = new SimpleJobOperator();

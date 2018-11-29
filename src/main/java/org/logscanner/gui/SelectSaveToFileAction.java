@@ -24,10 +24,9 @@ import org.springframework.stereotype.Component;
  * @author Victor Kadachigov
  */
 @Component
-public class SelectSaveToAction extends BaseAction
+public class SelectSaveToFileAction extends BaseAction
 {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = LoggerFactory.getLogger(SelectSaveToAction.class);
 	
 	@Autowired
 	private SearchModel searchModel;
@@ -45,12 +44,12 @@ public class SelectSaveToAction extends BaseAction
 	{
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		if (StringUtils.isNotBlank(searchModel.getResultPath()))
-			fileChooser.setSelectedFile(new File(searchModel.getResultPath()));
+		if (StringUtils.isNotBlank(searchModel.getResultFile()))
+			fileChooser.setSelectedFile(new File(searchModel.getResultFile()));
 		fileChooser.setFileFilter(createFileFilter());
 		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
 		{
-			searchModel.setResultPath(fileChooser.getSelectedFile().getAbsolutePath());
+			searchModel.setResultFile(fileChooser.getSelectedFile().getAbsolutePath());
 		}
 	}
 	

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.types.selectors.BaseSelector;
 import org.apache.tools.ant.types.selectors.FileSelector;
 import org.logscanner.Resources;
@@ -25,18 +26,22 @@ import org.logscanner.data.LocationType;
 import org.logscanner.data.UriContentReader;
 import org.logscanner.exception.BusinessException;
 import org.logscanner.exception.FileTooBigException;
+import org.logscanner.jobs.LocationsReader;
 import org.logscanner.util.fs.LocalDirectoryScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Victor Kadachigov
  */
+@Slf4j
 public abstract class BaseFileService implements FileSystemService
 {
-	private static final Logger log = LoggerFactory.getLogger(BaseFileService.class);
+	/** MAX_FILE_SIZE = 101 */
 	private static long MAX_FILE_SIZE = 101; //Mb
 	
 	@Autowired
@@ -99,7 +104,7 @@ public abstract class BaseFileService implements FileSystemService
 		if (!selectors.isEmpty())
 			dirScanner.setSelectors(selectors.toArray(new FileSelector[selectors.size()]));
 		dirScanner.scan();
-		List<FileInfo> list = processScannerResults(dirScanner, location); 
+		List<FileInfo> list = processScannerResults(dirScanner, location);
 		return list;
 	}
 	
@@ -122,14 +127,13 @@ public abstract class BaseFileService implements FileSystemService
 			Date contentStart = null;
 			Date lastModifiedTime = null;
 			Path path = file.toPath();
-			CacheFileInfo cacheFileInfo = cacheManager.getFileInfo(locationCode, path.toString());
+			CacheFileInfo cacheFileInfo = cacheManager.getFileInfo(locationCode, path.toString(), from);
 			if (cacheFileInfo == null)
 			{
 				try
 				{
 					BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
-					cacheManager.updateFromAttributes(locationCode, path.toString(), attr);
-					lastModifiedTime = new Date(attr.lastModifiedTime().toMillis());
+					cacheFileInfo = cacheManager.updateFromAttributes(locationCode, path.toString(), attr);
 				}
 				catch (IOException ex)
 				{
@@ -137,11 +141,9 @@ public abstract class BaseFileService implements FileSystemService
 					return false;
 				}
 			}
-			else
-			{
-				lastModifiedTime = cacheFileInfo.getLastModified();
-				contentStart = cacheFileInfo.getContentStart();
-			}
+			
+			lastModifiedTime = cacheFileInfo.getLastModified();
+			contentStart = cacheFileInfo.getContentStart();
 			
 			boolean result = lastModifiedTime.compareTo(from) >= 0 
 									&& (contentStart == null || contentStart.compareTo(to) <= 0);
@@ -151,13 +153,5 @@ public abstract class BaseFileService implements FileSystemService
 			
 			return result;
 		}
-	}
-
-	protected FileInfo fillAttributes(LocalFileInfo fileInfo)
-	{
-//		CacheFileInfo attr = cacheManager.getFileInfo(fileInfo.getLocationCode(), fileInfo.getFilePath());
-//		fileInfo.setLastModified(attr.getLastModified());
-//		fileInfo.setCreated(attr.getCreated());
-		return fileInfo;
 	}
 }

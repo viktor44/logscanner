@@ -12,7 +12,9 @@ import org.logscanner.data.LocationType;
 import org.logscanner.service.LocationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
@@ -21,13 +23,14 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Victor Kadachigov
  */
-public class LocationsReader implements ItemReader<Location>
+@Slf4j
+public class LocationsReader implements ItemReader<Location>, StepExecutionListener
 {
-	private static Logger log = LoggerFactory.getLogger(LocationsReader.class);
-
 	private Object monitor = new Object();
 	
 	@Autowired
@@ -114,15 +117,18 @@ public class LocationsReader implements ItemReader<Location>
 		return "";
 	}
 
-    @BeforeStep
-    public void setStepExecution(StepExecution stepExecution) 
+    @AfterStep
+	@Override
+	public ExitStatus afterStep(StepExecution stepExecution)
+	{
+    	locations = null;
+		return null;
+	}
+
+	@BeforeStep
+	@Override
+	public void beforeStep(StepExecution stepExecution)
     {
         this.stepExecution = stepExecution;
-    }
-    
-    @AfterStep
-    public void clean(StepExecution stepExecution)
-    {
-    	locations = null;
     }
 }

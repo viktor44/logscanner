@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.logscanner.common.gui.BaseAction;
 import org.logscanner.data.LogEvent;
+import org.logscanner.jobs.CopyFilesWriter;
 import org.logscanner.service.JobResultModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Victor Kadachigov
  */
+@Slf4j
 @Component
 public class CopyTextAction extends BaseAction
 {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = LoggerFactory.getLogger(CopyTextAction.class);
 	
 	@Autowired
 	private JobResultModel resultModel;

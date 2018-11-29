@@ -45,7 +45,6 @@ import org.springframework.stereotype.Component;
 public class SelectLocationsDialog extends BaseDialog 
 {
 	private static final long serialVersionUID = 1L;
-	private static Logger log = LoggerFactory.getLogger(SelectLocationsDialog.class);
 
 	private JXTreeTable treeTable;
 	private LocationsTreeTableModel treeTableModel;

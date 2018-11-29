@@ -2,8 +2,12 @@ package org.logscanner.service;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSetMetaData;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,29 +26,46 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+
 /**
  * @author Victor Kadachigov
  */
 @Component
-public class SearchModel 
+public class SearchModel implements Serializable
 {
-	private static Logger log = LoggerFactory.getLogger(SearchModel.class);
+	public static final int SAVE_TYPE_FILE = 1;
+	public static final int SAVE_TYPE_FOLDER = 2;
 	
 	@Autowired
 	private AppProperties props;
 
+	@Getter
 	private LocalDate fromDate;
+	@Getter
 	private LocalTime fromTime;
+	@Getter
 	private LocalDate toDate;
+	@Getter
 	private LocalTime toTime;
-	private boolean saveToFile;
-	private String resultPath;
+	@Getter
+	private boolean saveResults;
+	@Getter
+	private int saveType = SAVE_TYPE_FOLDER;
+	@Getter
+	private String resultFile;
+	@Getter
+	private String resultFolder;
+	@Getter
 	private Set<String> selectedLocations = new HashSet<>();
 //	private List<String> searchStrings;
+	@Getter
 	private String searchString;
+	@Getter
 	private String patternCode;
+	@Getter
 	private Long executionId;
-	private PropertyChangeSupport changeSupport;
+	private PropertyChangeSupport propertyChangeSupport;
 	
 	public SearchModel()
 	{
@@ -58,87 +79,72 @@ public class SearchModel
 		toDate = LocalDate.now();
 		toTime = LocalTime.now();
 		selectedLocations = new HashSet<>();
-		saveToFile = props.getDefaultSaveToFile() != null ? props.getDefaultSaveToFile() : false;
-		if (StringUtils.isNotBlank(props.getDefaultDir()))
-			resultPath = Paths.get(props.getDefaultDir(), "result.zip").toString();
+		saveResults = props.getDefaultSaveToFile() != null ? props.getDefaultSaveToFile() : false;
+		if (StringUtils.isNotBlank(props.getDefaultDir())) 
+		{
+			resultFile = Paths.get(props.getDefaultDir(), "result.zip").toString();
+			resultFolder = Paths.get(props.getDefaultDir()).toString();
+		}
 		else
-			resultPath = "result.zip";
-		patternCode = props.getDefaultPatternCode();
+			resultFile = "result.zip";
+		patternCode = null;// props.getDefaultPatternCode();
 	}
 	
-	public String getResultPath() {
-		return resultPath;
-	}
-	public void setResultPath(String resultPath) {
-		firePropertyChange("resultPath", this.resultPath, resultPath);
-		this.resultPath = resultPath;
-	}
-	public Set<String> getSelectedLocations() {
-		return selectedLocations;
+	public void setResultFile(String resultFile) {
+		String oldResulFile = this.resultFile;
+		this.resultFile = resultFile;
+		firePropertyChange("resultFile", oldResulFile, resultFile);
 	}
 	public void setSelectedLocations(Set<String> selectedLocations) {
-		firePropertyChange("selectedLocations", this.selectedLocations, selectedLocations);
+		Set<String> oldSelectedLocations = new HashSet<>(this.selectedLocations);
 		this.selectedLocations.clear();
 		this.selectedLocations.addAll(selectedLocations);
-	}
-//	public List<String> getSearchStrings() {
-//		return searchStrings;
-//	}
-//	public void setSearchStrings(List<String> searchStrings) {
-//		firePropertyChange("searchStrings", this.searchStrings, searchStrings);
-//		this.searchStrings = searchStrings;
-//	}
-	
-	public String getSearchString() {
-		return searchString;
+		firePropertyChange("selectedLocations", oldSelectedLocations, selectedLocations);
 	}
 	public void setSearchString(String searchString) {
-		firePropertyChange("searchString", this.searchString, searchString);
+		String oldSearchString = this.searchString;
 		this.searchString = searchString;
+		firePropertyChange("searchString", oldSearchString, searchString);
 	}
-	
-	public boolean isSaveToFile() {
-		return saveToFile;
-	}
-	public void setSaveToFile(boolean saveToFile) {
-		firePropertyChange("saveToFile", this.saveToFile, saveToFile);
-		this.saveToFile = saveToFile;
+	public void setSaveResults(boolean saveResults) {
+		boolean oldSaveResults = this.saveResults;
+		this.saveResults = saveResults;
+		firePropertyChange("saveToFile", oldSaveResults, saveResults);
 	}
 
     public synchronized void addPropertyChangeListener(PropertyChangeListener listener) 
     {
-        if (changeSupport == null)
-            changeSupport = new SwingPropertyChangeSupport(this);
-        changeSupport.addPropertyChangeListener(listener);
+        if (propertyChangeSupport == null)
+            propertyChangeSupport = new SwingPropertyChangeSupport(this);
+        propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     public synchronized void removePropertyChangeListener(PropertyChangeListener listener) 
     {
-        if (changeSupport == null)
+        if (propertyChangeSupport == null)
             return;
-        changeSupport.removePropertyChangeListener(listener);
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     public synchronized void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) 
     {
-        if (changeSupport == null)
-            changeSupport = new SwingPropertyChangeSupport(this);
-        changeSupport.addPropertyChangeListener(propertyName, listener);
+        if (propertyChangeSupport == null)
+            propertyChangeSupport = new SwingPropertyChangeSupport(this);
+        propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
     }
 
     public synchronized void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) 
     {
-        if (changeSupport == null)
+        if (propertyChangeSupport == null)
             return;
-        changeSupport.removePropertyChangeListener(propertyName, listener);
+        propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
     }
     
     private void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        if (changeSupport == null) 
+        if (propertyChangeSupport == null) 
         	return;
-        changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+        propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
-
     
     public LocalDateTime getFrom()
     {
@@ -157,12 +163,10 @@ public class SearchModel
     	return ToStringBuilder.reflectionToString(this);
     }
 
-	public LocalDate getFromDate() {
-		return fromDate;
-	}
 	public void setFromDate(LocalDate newFromDate) {
-		firePropertyChange("fromDate", this.fromDate, newFromDate);
+		LocalDate oldFromDate = this.fromDate;
 		this.fromDate = newFromDate;
+		firePropertyChange("fromDate", oldFromDate, newFromDate);
 
 		LocalDate newToDate = this.toDate;
 		if (fromDate != null) // && fromDate.compareTo(toDate) > 0
@@ -175,54 +179,54 @@ public class SearchModel
 		}
 	}
 
-	public LocalTime getFromTime() {
-		return fromTime;
-	}
 	public void setFromTime(LocalTime fromTime) {
-		firePropertyChange("fromTime", this.fromTime, fromTime);
+		LocalTime oldFromTime = this.fromTime;
 		this.fromTime = fromTime;
+		firePropertyChange("fromTime", oldFromTime, fromTime);
 	}
 
-	public LocalDate getToDate() {
-		return toDate;
-	}
 	public void setToDate(LocalDate toDate) {
-		firePropertyChange("toDate", this.toDate, toDate);
+		LocalDate oldToDate = this.toDate;
 		this.toDate = toDate;
+		firePropertyChange("toDate", oldToDate, toDate);
 	}
 
-	public LocalTime getToTime() {
-		return toTime;
-	}
 	public void setToTime(LocalTime toTime) {
-		firePropertyChange("toTime", this.toTime, toTime);
+		LocalTime oldToTime = this.toTime;
 		this.toTime = toTime;
+		firePropertyChange("toTime", oldToTime, toTime);
 	}
 
-	public Long getExecutionId() {
-		return executionId;
-	}
 	public void setExecutionId(Long executionId) {
-		firePropertyChange("executionId", this.executionId, executionId);
+		Long oldExecutionId = this.executionId;
 		this.executionId = executionId;
+		firePropertyChange("executionId", oldExecutionId, executionId);
 	}
 
-	public String getPatternCode() {
-		return patternCode;
-	}
 	public void setPatternCode(String patternCode) {
-		firePropertyChange("patternCode", this.patternCode, patternCode);
+		String oldPatternCode = this.patternCode;
 		this.patternCode = patternCode;
+		firePropertyChange("patternCode", oldPatternCode, patternCode);
 	}
 
-	public void saveDefaults()
-	{
+	public void saveDefaults() {
 		props.setDefaultPatternCode(patternCode);
-		props.setDefaultSaveToFile(saveToFile);
-		if (saveToFile)
-		{
-			Path p = Paths.get(resultPath);
+		props.setDefaultSaveToFile(saveResults);
+		if (saveResults) {
+			Path p = Paths.get(resultFile);
 			props.setDefaultDir(p.getParent().toString());
 		}
+	}
+
+	public void setResultFolder(String resultFolder) {
+		String oldResultFolder = this.resultFolder;
+		this.resultFolder = resultFolder;
+		firePropertyChange("resultFolder", oldResultFolder, resultFolder);
+	}
+
+	public void setSaveType(int saveType) {
+		int oldSaveType = this.saveType;
+		this.saveType = saveType;
+		firePropertyChange("saveType", oldSaveType, saveType);
 	}
 }
