@@ -6,5 +6,6 @@ package org.logscanner.data;
 public enum LocationType
 {
 	LOCAL,
-	SFTP;
+	SFTP,
+	ELK;
 }

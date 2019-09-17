@@ -214,7 +214,8 @@ public class SearchModel implements Serializable
 		props.setDefaultSaveToFile(saveResults);
 		if (saveResults) {
 			Path p = Paths.get(resultFile);
-			props.setDefaultDir(p.getParent().toString());
+			if (p.getParent() != null)
+				props.setDefaultDir(p.getParent().toString());
 		}
 	}
 
